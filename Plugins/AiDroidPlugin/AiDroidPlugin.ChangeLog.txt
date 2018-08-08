@@ -1,0 +1,56 @@
+﻿[0.5.6]
+  - Changed computing common normals for all selected REM meshes
+
+[0.5.4]
+  - Fix in the gui and improved Object Tree handling
+
+[0.5.2]
+  - Added editable backup extension of REM files
+  - Fixed material selection crash for missing materials
+  - Used materials are copied along with mesh frames from other REMs (via Workspace)
+
+[0.5.1]
+  - fixed invalid material when merging imported materials
+  - fixed crash when a texture wasn't found in TEXH folder
+  - textures are also taken from the current folder
+
+[0.4.42.39]
+  - imported meshes can be easier placed into destination frames
+  - Fixed that invalid bones crashed the renderer
+  - Fixed importing materials didn't update textures
+
+[0.4.42.36]
+  - Fixed REA event handlers were dropped - GUI was responsive
+  - Fixed REA double initialization
+
+[0.4.42.34]
+  - Fixed writing REA units. It was incomplete.
+  - Added editing unknowns of REA units.
+  - Added REA menustrip for saving, reopening, etc of REA files not included in FPK files.
+  - Added clicking animation tracks highlights the corresponding bone.
+
+[0.4.42.32]
+  - Changed display of used bones to use the bone frame parents as root
+  - Added display of animations
+  - Change: textures are cached and are never released
+  - Added Fbx animation export/import
+
+[0.4.42.31]
+  - Added Fbx import/export (also DAE, DXF, 3DS, OBJ)
+  - Added bone matrix calculation for Rest Pose
+  - Fixed taking wrong materials when replacing meshes
+  - Fixed crash when displaying meshes with missing bones or textures
+  - Fixed workspace functions for Frames : Move, Remove, Add, Replace, Merge
+  - Fixed common Fbx exports putting meshes into wrong frames (common means ODF and REM)
+  - Fixed Mqo exports with local coordinates
+
+[0.4.42.30]
+  - Added hint when textures are not found to export TEXH.fpk
+  - Fixed crash when textures were not found
+
+[0.4.42.24]
+  - added "Unique Bone" option : a change of the bone's matrix is applied to all meshes
+
+[0.4.42.23]
+  - Fix: renaming mesh frames orphaned meshes. (mesh.frame and mesh.name exchanged additionally)
+  - Fix: bone matrix math to render meshes corrected

@@ -1,0 +1,9 @@
+﻿  ImportedFBXExporter.cpp
+c:\users\ez\sb3u\plugins\sb3utilityfbx\importedfbxexporter.cpp(1): fatal error C1083: Cannot open include file: 'fbxsdk.h': No such file or directory
+  SB3UtilityFBX.cpp
+c:\users\ez\sb3u\plugins\sb3utilityfbx\sb3utilityfbx.cpp(1): fatal error C1083: Cannot open include file: 'fbxsdk.h': No such file or directory
+  SB3UtilityFBXExporter.cpp
+c:\users\ez\sb3u\plugins\sb3utilityfbx\sb3utilityfbxexporter.cpp(1): fatal error C1083: Cannot open include file: 'fbxsdk.h': No such file or directory
+  SB3UtilityFBXImporter.cpp
+c:\users\ez\sb3u\plugins\sb3utilityfbx\sb3utilityfbximporter.cpp(1): fatal error C1083: Cannot open include file: 'fbxsdk.h': No such file or directory
+  Generating Code...

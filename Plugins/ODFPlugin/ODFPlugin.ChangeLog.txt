@@ -1,0 +1,80 @@
+﻿[0.5.5]
+  - Fix for Center View in the renderer for ODF meshes (most of them).
+  - Loading and saving ODF and ODA is a bit faster, and allow the complete removal of the source file.
+  - Again! Automatic imports of materials and textures chose incorrect imported ones when not all submeshes were replaced.
+
+[0.5.4]
+  - Fix for morph exports of ODFs using Skip Unused Profiles and Replace Normals gets set according to normals being imported.
+  - Added storing the last chosen mesh export format
+  - Fixed setting wrong target mesh frame in the replacing options upon dropping the mesh into an unused area of the Object Tree.
+  - Fix for many operations which were modifying the Object Tree.
+  - Added retaining order of bone lists (one reason for partial morphing from ALP).
+  - Fixed data corruption in ODFs upon replacing (adding) a submesh.
+  - Automatic imports of materials and textures chose incorrect imported ones when not all submeshes were replaced.
+  - Support for RLE compressed TGAs when rendering
+  - Fixed MQO export didn't export all textures when one texture caused an error. Same for Morph MQOs.
+
+[0.5.3]
+  - Added, expanded nodes in the Object Tree are expanded after all actions
+  - Imported meshes and can be dragged into the Mesh View for replacement. (Also frames.)
+  - Dragging a mesh from the Object Tree into the Workspace,
+    drags the mesh frame instead and all used materials and textures.
+
+[0.4.42.53]
+  - Added Zero Check for identifying unknowns
+  - Found new unknown field, separated more AlwaysZero fields
+  - Stability fixes for missing ODF sections
+  - Fixed after deleting submeshes the Object Tree wasn't updated and produced crashes when a node of a bone was clicked.
+
+[0.4.42.52]
+  - Fixed ODF corruption after use of CopyBonesNear and CopyBonesOrder
+  - Fixed crash when replacing meshes which used non existing materials
+  - Fixed "cant rename submesh without renaming another" after replacing meshes
+  - Changed replacing animations considers a start position in "Replace Mode"
+  - Added "Replace Present Mode" for replacing animations
+  - Added unknowns of submeshes can be changed
+  - Changed replacing animations: rotations are multiplied by -1
+
+[0.4.42.50]
+  - Nameless meshes are exported using their id as name
+
+[0.4.42.39]
+  - imported meshes can be easier placed into destination frames
+
+[0.4.42.34]
+  - Added clicking animation tracks highlights the corresponding bone.
+
+[0.4.42.32]
+  - fixed crashes for Renai+H : Replacing meshes from workspace (imported and from open ODFs)
+  - removed misleading error message having a mesh id twice during replacing meshes
+
+[0.4.42.24]
+  - removed 8.3 filename export option for FBX
+  - changed FBX export to common FBX exporter
+  - added animation export/import
+  - removed ODFPluginFBX
+
+[0.4.42.22]
+  - menu options for REM persistent in DLL config file
+  - Center View corrected
+  - useless editor.Set{Frame|Material|Texture}Name() no longer invoked
+  - removed unused importers for MQO and FBX
+
+[0.4.42.18]
+  - freeing scripting variables
+
+[0.4.42.9]
+  - MQO export with world coordinates failed
+  - MQO import always failed
+  - Renderer crashed for meshes with missing textures
+    (head meshes having wrong extentions in textures)
+
+[0.4.42.8]
+  - added replacing morphs
+  - materials and textures merged from workspace
+
+[0.4.42.7]
+  - ODF/ODA animations are shown
+
+[p133]
+  - ODF animations are shown

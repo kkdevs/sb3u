@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AiDroidPlugin.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="KeepBackupOfFPK" Provider="PortableSettingsProvider" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CompressFPK" Provider="PortableSettingsProvider" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="KeepBackupOfREM" Provider="PortableSettingsProvider" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="KeepBackupOfREA" Provider="PortableSettingsProvider" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="BackupExtensionREM" Provider="PortableSettingsProvider" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">.RE-M</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

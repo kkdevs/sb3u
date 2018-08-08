@@ -1,0 +1,123 @@
+/* ppParser OpenPP([DefaultVar]string path)
+   xxParser OpenXX([DefaultVar]ppParser parser, string name)
+   void ExportMqo([DefaultVar]xxParser parser, object[] meshNames, string dirPath, bool singleMqo, bool worldCoords) */
+
+/* meshes={"a01_O_hadaka_01", "a01_O_udeL_01"}
+
+ppParser=OpenPP("C:\illusion\AG3\data\js3_00_02_00.pp")
+xxParser=OpenXX(ppParser, "a15_01.xx")
+ExportMqo(xxParser, {"a01_O_hadaka_01", "a01_O_udeL_01"}, ".", true, false)
+ExportMqo(dirPath=".", meshNames=meshes, xxParser, worldCoords=false, true) // the equivalent using some named parameters out-of-order
+
+OpenPP("C:\illusion\AG3\data\js3_00_02_00.pp")
+.OpenXX("a15_01.xx")
+.ExportMqo(meshes, ".", true, false) */
+
+/* pp = OpenPP(path="d:\Archives\Games\AA\AAAIP\testbench\chars.pp")
+xx = OpenXX(pp, "A01_00_00_00.xx")
+ExportMqo(xx, {"A01_O_body"}, ".", true, false)
+
+pp = OpenPP("d:\RGF\Real Kanojo\data\rk10.pp")
+xx = OpenXX(pp, "cm_body_00_12.xx")
+ExportMqo(xx, {"men_body_B"}, ".", true, false)
+
+ppParser0 = OpenPP(path="D:\iYuhg\data\mo_00_00_00.pp")
+ppEditor0 = ppEditor(parser=ppParser0)
+xxParser0 = OpenXX(parser=ppParser0, name="ch_01_01.xx")
+xxEditor0 = xxEditor(parser=xxParser0)
+ExportFbx(xxParser=xxParser0, meshNames={ "kd_O_skart_01_O1" }, xaParsers=null, startKeyframe=-1, endKeyframe=0, linear=True, path="D:\iYuhg\data\mo_00_00_00\ch_01_01\meshes1.fbx", exportFormat=".fbx", allFrames=False, skins=True, embedMedia=False) */
+
+LoadPlugin(PluginDirectory+"ODFPlugin.dll")
+// odfFolder = OpenODFFolderOf("d:\Renai+H\odf\a\a_000_base_HI.ODF")
+
+// body = OpenODF("d:\Renai+H\odf\a\a_000_base_HI.ODF")
+// ExportMqo([DefaultVar]odfParser parser, object[] meshNames, string dirPath, bool singleMqo, bool worldCoords)
+// ExportMqo(body, { "Mesh_c_body_only_Layer1", "Mesh_c_body_only_Layer2" }, "d:\Renai+H\odf\a\exp", true, false)
+
+// body = OpenODF("d:\LGKL\data\odf\Body\base_body_A\RT_body_type_A.ODF.def") // decrypted
+// body = OpenODF("d:\Archives\Games\Tea Time\odf\RT_body_type_A.ODF") // encrypted
+// WriteODF(body)
+
+// body = OpenODF("d:\Archives\Games\Netowaku Netoraru Karemachi Kanojo\Character Maker v4 Trial\data\odf\Body\base_body_A\RT_body_type_A.ODF")
+// body = OpenODF("d:\LGKL\data\odf\Body\base_body_A\RT_body_type_A.ODF")
+// ExportODFtoFbx([DefaultVar]odfParser parser, object[] meshNames, string path, string exportFormat, bool allFrames, bool skins, bool _8dot3)
+// ExportODFtoFbx(body, { "Mesh_RT_base_Layer1" }, "d:\Archives\Games\Tea Time\odf\export\mesh.fbx", "FBX", true, true, false)
+
+// head = OpenODF("d:\LGKL\data\odf\Head\Model\head_S\HEAD_RT_base.ODF") // decrypted
+// ExportMqo(head, { "Mesh_HEAD_RT_base_Layer1" }, "d:\LGKL\data\odf\Head\Model\head_S\exp", true, false) // encrypted textures
+
+// head = OpenODF("d:\Archives\Games\Tea Time\hair_b_unt_a\RT_base.ODF") // encrypted
+// WriteODF(head)
+
+// body = OpenODF("d:\LGKL\data\odf\Body\base_body_A\RT_body_type_A.ODF") // decrypted
+// ExportMorphMqo([DefaultVar]string dirPath, odfParser odfParser, string morphObjName, bool skipUnusedProfiles)
+// ExportMorphMqo(null, body, "Fat_A_BODY_Lower_asoko.Mop", true)
+
+// ImportMqoAsODF([DefaultVar]string path)
+// mqo = ImportMqoAsODF("d:\LGKL\data\odf\Body\base_body_A\RT_body_type_A\meshes1-broken_left_arm.odf.mqo")
+
+// mqo = ImportMorphMqo("d:\LGKL\data\odf\Body\base_body_A\RT_body_type_A\Mesh_RT_base_Layer1-Fat_A_BODY_Arm_L.Mop-0.morph.mqo")
+// fbx = ImportFbxAsODF("d:\LGKL\data\odf\Body\base_body_A\RT_body_type_A\meshes2.fbx")
+
+LoadPlugin(PluginDirectory+"AiDroidPlugin.dll")
+// parser = OpenREM("d:\AIDROID\KG\FF\pt_FF(v2)\zlc-FF0000_00_00 (8622).REM")
+// ExportMqo([DefaultVar]remParser parser, object[] meshNames, string dirPath, bool singleMqo, bool worldCoords)
+// ExportMqo(parser, { "body20", "body21", "body22", "Foot60", "Foot61" }, "d:\AIDROID\KG\FF\pt_FF(v2)\zlc-FF0000_00_00 (8622)", true, false)
+
+LoadPlugin(PluginDirectory+"UnityPlugin.dll")
+//parser = OpenUnity3d("d:\HaremMate\abdata\chara\cf_body_00.unity3d")
+//ExportFbx(parser, { 2204, 2205, 2207, 2228, 2230, 2250, 2252 }, null, 0, 0, true, false, 0.25, "d:\HaremMate\abdata\chara\cf_body_00\body_and_clothes.fbx", ".fbx", false, true, true, false)
+//animator = OpenAnimator(parser, "p_cf_body_01")
+//animator = OpenAnimator(parser, "cf_body_03")
+//editor = AnimatorEditor(animator)
+parser = OpenUnity3d("d:\HaremMate\abdata\chara\cf_body_02.unity3d")
+//Unity3dEditor("d:\HaremMate\abdata\chara\cf_body_02.unity3d")
+animator = OpenAnimator(parser, "p_cf_body_22")
+//ExportFbx(animator, { "cf_O_body01_a_ude_02" }, null, 0, 0, true, false, 0.25, "d:\HaremMate\abdata\chara\cf_body_02\arms.fbx", ".fbx", false, true, true, false)
+//ExportFbx(animator, { "cf_O_mnpa_00", "cf_O_mnpa_00_mo", "cf_O_mnpb_00", "cf_O_mnpb_00_mo", "cf_O_mnpk_00", "cf_O_tang", "cf_O_bot22_sk_D_O", "cf_O_bot22_sk_D_U", "cf_O_bot22_sk_N_O", "cf_O_bot22_sk_N_U", "cf_O_shorts_d", "cf_O_shorts_n", "cf_O_shorts_n_u", "cf_O_body01_a_ude_02", "cf_O_tume01_tumeY_02", "cf_O_cos22_sode02", "cf_O_body01_a_ude_03", "cf_O_tume01_tumeY_03", "cf_O_cos22_sode03", "cf_O_body01_a", "cf_O_tume01_a", "cf_O_top22_d_top_00", "cf_O_top22_d_top_01", "cf_O_top22_d_top_ribon", "cf_O_top22_d_top_ribon_u", "cf_O_body01_b", "cf_O_nip01_b", "cf_O_tume01_b", "cf_O_top22_d_top_n", "cf_O_top22_n_top", "cf_O_top22_n_top_n_ribon_O", "cf_O_top22_n_top_n_ribon_u", "cf_O_bra_b_d", "cf_O_bra_b_n", "cf_O_bra_b_n_u", "cf_O_body01_c", "cf_O_nip01_c", "cf_O_tume01_c", "cf_O_bra_c_d", "cf_O_bra_c_n", "cf_O_bra_c_n_u", "cf_O_mnpa_00", "cf_O_mnpa_00_mo", "cf_O_mnpb_00", "cf_O_mnpb_00_mo", "cf_O_mnpk_00", "cf_O_tang", "cf_O_bot22_sk_D_O", "cf_O_bot22_sk_D_U", "cf_O_bot22_sk_N_O", "cf_O_bot22_sk_N_U", "cf_O_shorts_d", "cf_O_shorts_n", "cf_O_shorts_n_u", "cf_O_body01_a_ude_02", "cf_O_tume01_tumeY_02", "cf_O_cos22_sode02", "cf_O_body01_a_ude_03", "cf_O_tume01_tumeY_03", "cf_O_cos22_sode03", "cf_O_body01_a", "cf_O_tume01_a", "cf_O_top22_d_top_00", "cf_O_top22_d_top_01", "cf_O_top22_d_top_ribon", "cf_O_top22_d_top_ribon_u", "cf_O_body01_b", "cf_O_nip01_b", "cf_O_tume01_b", "cf_O_top22_d_top_n", "cf_O_top22_n_top", "cf_O_top22_n_top_n_ribon_O", "cf_O_top22_n_top_n_ribon_u", "cf_O_bra_b_d", "cf_O_bra_b_n", "cf_O_bra_b_n_u", "cf_O_body01_c", "cf_O_nip01_c", "cf_O_tume01_c", "cf_O_bra_c_d", "cf_O_bra_c_n", "cf_O_bra_c_n_u", "cf_O_mnpa_00", "cf_O_mnpa_00_mo", "cf_O_mnpb_00", "cf_O_mnpb_00_mo", "cf_O_mnpk_00", "cf_O_tang", "cf_O_bot22_sk_D_O", "cf_O_bot22_sk_D_U", "cf_O_bot22_sk_N_O", "cf_O_bot22_sk_N_U", "cf_O_shorts_d", "cf_O_shorts_n", "cf_O_shorts_n_u", "cf_O_body01_a_ude_02", "cf_O_tume01_tumeY_02", "cf_O_cos22_sode02", "cf_O_body01_a_ude_04", "cf_O_body01_a_ude_03", "cf_O_tume01_tumeY_03", "cf_O_cos22_sode03", "cf_O_body01_a", "cf_O_tume01_a", "cf_O_top22_d_top_00", "cf_O_top22_d_top_01", "cf_O_top22_d_top_ribon", "cf_O_top22_d_top_ribon_u", "cf_O_body01_b", "cf_O_nip01_b", "cf_O_tume01_b", "cf_O_top22_d_top_n", "cf_O_top22_n_top", "cf_O_top22_n_top_n_ribon_O", "cf_O_top22_n_top_n_ribon_u", "cf_O_bra_b_d", "cf_O_bra_b_n", "cf_O_bra_b_n_u", "cf_O_body01_c", "cf_O_nip01_c", "cf_O_tume01_c", "cf_O_bra_c_d", "cf_O_bra_c_n", "cf_O_bra_c_n_u", "cf_O_mnpa_00", "cf_O_mnpa_00_mo", "cf_O_mnpb_00", "cf_O_mnpb_00_mo", "cf_O_mnpk_00", "cf_O_tang", "cf_O_bot22_sk_D_O", "cf_O_bot22_sk_D_U", "cf_O_bot22_sk_N_O", "cf_O_bot22_sk_N_U", "cf_O_shorts_d", "cf_O_shorts_n", "cf_O_shorts_n_u", "cf_O_body01_a_ude_02", "cf_O_tume01_tumeY_02", "cf_O_cos22_sode02", "cf_O_body01_a_ude_04", "cf_O_body01_a_ude_03", "cf_O_tume01_tumeY_03", "cf_O_cos22_sode03", "cf_O_body01_a", "cf_O_tume01_a", "cf_O_top22_d_top_00", "cf_O_top22_d_top_01", "cf_O_top22_d_top_ribon", "cf_O_top22_d_top_ribon_u", "cf_O_body01_b", "cf_O_nip01_b", "cf_O_tume01_b", "cf_O_top22_d_top_n", "cf_O_top22_n_top", "cf_O_top22_n_top_n_ribon_O", "cf_O_top22_n_top_n_ribon_u", "cf_O_bra_b_d", "cf_O_bra_b_n", "cf_O_bra_b_n_u", "cf_O_body01_c", "cf_O_nip01_c", "cf_O_tume01_c", "cf_O_bra_c_d", "cf_O_bra_c_n", "cf_O_bra_c_n_u"}, null, 0, 0, true, false, 0.25, "d:\HaremMate\abdata\chara\cf_body_02\cf_body_22.fbx", ".fbx", true, true, true, false)
+editor = AnimatorEditor(animator)
+//editor.SetFrameName(meshFrame, "ABC_sode0_2_xyz")
+//meshFrame = editor.GetTransformId("cf_O_tang")
+meshFrame = editor.GetTransformId("cf_O_body01_a_ude_02")
+editor.SetFrameName(meshFrame, "cf_O_body01_a_ude_04")
+//rootBone = editor.GetTransformId("cf_J_Kosi01_s")
+rootBone = editor.GetTransformId("cf_J_Hand_s_L")
+fbx = ImportFbx(path="d:\HaremMate\abdata\chara\cf_body_02\arms.fbx", negateQuaternionFlips=false);
+fbxEditor = ImportedEditor(fbx);
+source = fbxEditor.FindFrame("cf_O_body01_a_ude_02")
+parent = editor.GetTransformId("N_sode02")
+//editor.MergeFrame(source, parent)
+meshFrame = editor.GetTransformId("cf_O_body01_a_ude_02")
+//editor.RemoveSkinnedMeshRenderer(4)
+//editor.ReplaceSkinnedMeshRenderer(fbxEditor.Meshes[0], meshFrame, rootBone, merge=False, normals="Replace", bones="Replace")
+//editor.ReplaceSkinnedMeshRenderer(fbxEditor.Meshes[0], meshFrame, -1, merge=False, normals="CopyNear", bones="CopyNear")
+fbx = ImportFbx(path="d:\HaremMate\abdata\chara\cf_body_02\glove2_blue.fbx", negateQuaternionFlips=false);
+fbxEditor = ImportedEditor(fbx);
+//editor.ReplaceSkinnedMeshRenderer(fbxEditor.Meshes[0], meshFrame, -1, merge=False, normals="CopyNear", bones="CopyNear")
+//ExportFbx(animator, { "cf_O_mnpa_00", "cf_O_mnpa_00_mo", "cf_O_mnpb_00", "cf_O_mnpb_00_mo", "cf_O_mnpk_00", "cf_O_tang", "cf_O_bot22_sk_D_O", "cf_O_bot22_sk_D_U", "cf_O_bot22_sk_N_O", "cf_O_bot22_sk_N_U", "cf_O_shorts_d", "cf_O_shorts_n", "cf_O_shorts_n_u", "cf_O_body01_a_ude_02", "cf_O_tume01_tumeY_02", "cf_O_cos22_sode02", "cf_O_body01_a_ude_03", "cf_O_tume01_tumeY_03", "cf_O_cos22_sode03", "cf_O_body01_a", "cf_O_tume01_a", "cf_O_top22_d_top_00", "cf_O_top22_d_top_01", "cf_O_top22_d_top_ribon", "cf_O_top22_d_top_ribon_u", "cf_O_body01_b", "cf_O_nip01_b", "cf_O_tume01_b", "cf_O_top22_d_top_n", "cf_O_top22_n_top", "cf_O_top22_n_top_n_ribon_O", "cf_O_top22_n_top_n_ribon_u", "cf_O_bra_b_d", "cf_O_bra_b_n", "cf_O_bra_b_n_u", "cf_O_body01_c", "cf_O_nip01_c", "cf_O_tume01_c", "cf_O_bra_c_d", "cf_O_bra_c_n", "cf_O_bra_c_n_u" }, null, 0, 0, true, false, 0.25, "d:\HaremMate\abdata\chara\cf_body_02\p_cf_body_22.fbx", ".fbx", false, true, true, false)
+//ExportFbx(animator, { "cf_O_tang" }, null, 0, 0, true, false, 0.25, "d:\HaremMate\abdata\chara\cf_body_02\cf_O_tang.fbx", ".fbx", false, true, true, false)
+//parser = OpenUnity3d("d:\HaremMate\abdata\chara\cf_head_00.unity3d")
+//editor = Unity3dEditor("d:\HaremMate\abdata\chara\cf_head_00.unity3d")
+//animator = OpenAnimator(parser, "p_cf_head_01")
+//ExportTexture(parser, "*")
+//MergeTextures(parser, "d:\HaremMate\abdata\chara\cf_head_00")
+//editor = Unity3dEditor("D:\HaremMate\abdata\chara\cf_hair_b00.unity3d")
+//ExportFbx(editor.Parser, { 251, -276 }, null, 0, 0, true, false, 0.25, "d:\HaremMate\abdata\chara\cf_head_00\251-276.fbx", ".fbx", false, true, true, false)
+//parser = OpenUnity3d("d:\HaremMate\abdata\sp\spdata_00.unity3d")
+//ExportTexture(parser, "NowLoading")
+//itex = ImportTexture("d:\HaremMate\abdata\sp\spdata_00\logo.tga")
+//MergeTexture(parser, itex)
+//RemoveAsset(parser, 1264)
+//RemoveAssets(parser, 1264, 1467)
+//RemoveAsset(parser, 1315) RemoveAsset(parser, 1317) RemoveAsset(parser, 1318)
+//fbx = ImportFbx(path="d:\HaremMate\abdata\chara\cf_body_02\mat_test2.fbx", negateQuaternionFlips=false);
+//fbxEditor = ImportedEditor(fbx);
+//editor.MergeTexture(fbxEditor.Imported.TextureList[0]);
+//editor.MergeMaterial(fbxEditor.Imported.MaterialList[0]);
+//WriteUnity3d(parser)
+// itex = ImportTexture("d:\Temp\hmate_01_maket\CharaMakeTrial\abdata\sp\spdata_00\CAB-11a3315e1e889fd4bb613bcb2bd11f55\Texture2D\hm_sp_01_00_00.tga")
+// editor.MergeTexture(itex)
+// ExportAsset(editor.Parser, 12, "d:\Temp\hmate_01_maket\CharaMakeTrial\abdata\sp\spdata_00\CAB-11a3315e1e889fd4bb613bcb2bd11f55\12")
+//parser = OpenUnity3d("d:\HaremMate\abdata\List\loadlist_00.unity3d")
+//ExportMonoBehaviour(parser, "*")
+//ReplaceMonoBehaviour(parser, "d:\HaremMate\abdata\List\loadlist_00\SpList_HScene.MonoBehaviour")

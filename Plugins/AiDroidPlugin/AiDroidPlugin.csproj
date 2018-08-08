@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{56C17EED-BF1C-41B8-A08E-B63C0C602A03}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AiDroidPlugin</RootNamespace>
+    <AssemblyName>AiDroidPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\plugins\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SlimDX">
+      <HintPath>..\SB3UtilityExternalLibraries\SlimDX.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.5.0.15095, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SB3UtilityExternalLibraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FPK\Fbx.cs" />
+    <Compile Include="FPK\FormFPK.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FPK\FormFPK.Designer.cs">
+      <DependentUpon>FormFPK.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FPK\FormREA.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FPK\FormREA.Designer.cs">
+      <DependentUpon>FormREA.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FPK\FormREM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FPK\FormREM.Designer.cs">
+      <DependentUpon>FormREM.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FPK\FormREMDragDrop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FPK\FormREMDragDrop.Designer.cs">
+      <DependentUpon>FormREMDragDrop.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FPK\FormREADragDrop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FPK\FormREADragDrop.Designer.cs">
+      <DependentUpon>FormREADragDrop.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FPK\fpk.cs" />
+    <Compile Include="FPK\fpkEditor.cs" />
+    <Compile Include="FPK\Mqo.cs" />
+    <Compile Include="FPK\REA.cs" />
+    <Compile Include="FPK\reaEditor.cs" />
+    <Compile Include="FPK\REM.cs" />
+    <Compile Include="FPK\remEditor.cs" />
+    <Compile Include="PortableSettingsProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FPK\RenderObjectREM.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AiDroidBase\AiDroidBase.csproj">
+      <Project>{F90359AB-D9E6-4110-8AD4-FC12A93D0CF4}</Project>
+      <Name>AiDroidBase</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SB3UtilityPlugins\SB3UtilityPlugins.csproj">
+      <Project>{76C12FB4-AEBF-4271-9CCA-6F04A25ED266}</Project>
+      <Name>SB3UtilityPlugins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SB3UtilityPP\SB3UtilityPP.csproj">
+      <Project>{5647B104-8F58-4867-B849-DAC65D5243BD}</Project>
+      <Name>SB3UtilityPP</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SB3Utility\SB3Utility.csproj">
+      <Project>{A351DFAB-3235-4CEA-9916-1BAE973B65AE}</Project>
+      <Name>SB3Utility</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FPK\FormFPK.resx">
+      <DependentUpon>FormFPK.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FPK\FormREA.resx">
+      <DependentUpon>FormREA.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FPK\FormREM.resx">
+      <DependentUpon>FormREM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FPK\FormREMDragDrop.resx">
+      <DependentUpon>FormREMDragDrop.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FPK\FormREADragDrop.resx">
+      <DependentUpon>FormREADragDrop.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AiDroidPlugin.ChangeLog.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B4C84141-4901-4648-81D6-5EF452C42964}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ODFPlugin</RootNamespace>
+    <AssemblyName>ODFPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\plugins\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\bin\plugins\ODFPlugin.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\plugins\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\bin\plugins\ODFPlugin.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+    <NoWarn>1591</NoWarn>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SlimDX">
+      <HintPath>..\SB3UtilityExternalLibraries\SlimDX.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.5.0.15095, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SB3UtilityExternalLibraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Fbx.cs" />
+    <Compile Include="FormAnimView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAnimViewDragDrop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAnimViewDragDrop.Designer.cs">
+      <DependentUpon>FormAnimViewDragDrop.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMeshView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMeshView.Designer.cs">
+      <DependentUpon>FormMeshView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMeshViewDragDrop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMeshViewDragDrop.designer.cs">
+      <DependentUpon>FormMeshViewDragDrop.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mqo.cs" />
+    <Compile Include="odaEditor.cs" />
+    <Compile Include="odfEditor.cs" />
+    <Compile Include="odfFile.cs" />
+    <Compile Include="odfFolder.cs" />
+    <Compile Include="PortableSettingsProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="RenderObjectODF.cs" />
+    <Compile Include="Settings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ODFBase\ODFBase.csproj">
+      <Project>{8C406D6F-E4E1-4F24-814F-859E58B9EBEF}</Project>
+      <Name>ODFBase</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SB3UtilityPlugins\SB3UtilityPlugins.csproj">
+      <Project>{76C12FB4-AEBF-4271-9CCA-6F04A25ED266}</Project>
+      <Name>SB3UtilityPlugins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SB3UtilityPP\SB3UtilityPP.csproj">
+      <Project>{5647B104-8F58-4867-B849-DAC65D5243BD}</Project>
+      <Name>SB3UtilityPP</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SB3Utility\SB3Utility.csproj">
+      <Project>{A351DFAB-3235-4CEA-9916-1BAE973B65AE}</Project>
+      <Name>SB3Utility</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FormAnimViewDragDrop.resx">
+      <DependentUpon>FormAnimViewDragDrop.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMeshView.resx">
+      <DependentUpon>FormMeshView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMeshViewDragDrop.resx">
+      <DependentUpon>FormMeshViewDragDrop.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ODFPlugin.ChangeLog.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

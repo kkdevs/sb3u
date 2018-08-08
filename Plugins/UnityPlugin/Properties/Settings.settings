@@ -1,0 +1,45 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="UnityPlugin.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="KeepBackupOfUnity3d" Provider="PortableSettingsProvider" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="BackupExtensionUnity3d" Provider="PortableSettingsProvider" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">.unit-y3d</Value>
+    </Setting>
+    <Setting Name="BackupExtensionAssets" Provider="PortableSettingsProvider" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">.asse-ts</Value>
+    </Setting>
+    <Setting Name="BackupExtensionNone" Provider="PortableSettingsProvider" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">.none</Value>
+    </Setting>
+    <Setting Name="DialogRendererMeshAttributesSize" Provider="PortableSettingsProvider" Type="System.Drawing.Size" Scope="Application">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="MonoBehaviourEditorSize" Provider="PortableSettingsProvider" Type="System.Drawing.Size" Scope="Application">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="DialogAnimationDragDropSize" Provider="PortableSettingsProvider" Type="System.Drawing.Size" Scope="Application">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="AnimationExportFormat" Provider="PortableSettingsProvider" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">FBX 2015.1</Value>
+    </Setting>
+    <Setting Name="FbxExportDisplayBoneSize" Provider="PortableSettingsProvider" Type="System.Single" Scope="Application">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="DialogCameraSize" Provider="PortableSettingsProvider" Type="System.Drawing.Size" Scope="Application">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="ExportUncompressedAs" Provider="PortableSettingsProvider" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">BMP</Value>
+    </Setting>
+    <Setting Name="AssetBundleClearMainAsset" Provider="PortableSettingsProvider" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="FbxExportFlatInBetween" Provider="PortableSettingsProvider" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

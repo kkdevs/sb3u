@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AA5F87F2-921D-4909-B55C-5A257CBD5A58}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UnityPlugin</RootNamespace>
+    <AssemblyName>UnityPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\plugins\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DX11TutCore">
+      <HintPath>..\..\lib\DX11TutCore.dll</HintPath>
+    </Reference>
+    <Reference Include="SlimDX">
+      <HintPath>..\..\lib\SlimDX.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>..\..\lib\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnimationEditor.cs" />
+    <Compile Include="AnimatorEditor.cs" />
+    <Compile Include="AnimatorControllerEditor.cs" />
+    <Compile Include="AnimatorOverrideControllerEditor.cs" />
+    <Compile Include="AssetBundleManifestEditor.cs" />
+    <Compile Include="AudioClipEditor.cs" />
+    <Compile Include="CameraEditor.cs" />
+    <Compile Include="FormVersionWarning.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormVersionWarning.Designer.cs">
+      <DependentUpon>FormVersionWarning.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoBehaviourEditor.cs" />
+    <Compile Include="UVNormalBlendMonoBehaviourEditor.cs" />
+    <Compile Include="FormAnimation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAnimation.Designer.cs">
+      <DependentUpon>FormAnimation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAnimationDragDrop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAnimationDragDrop.Designer.cs">
+      <DependentUpon>FormAnimationDragDrop.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAssetBundleManifest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAssetBundleManifest.Designer.cs">
+      <DependentUpon>FormAssetBundleManifest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAudioClip.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAudioClip.Designer.cs">
+      <DependentUpon>FormAudioClip.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCamera.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCamera.Designer.cs">
+      <DependentUpon>FormCamera.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMonoBehaviour.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMonoBehaviour.Designer.cs">
+      <DependentUpon>FormMonoBehaviour.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fbx.cs" />
+    <Compile Include="FormAnimator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAnimator.Designer.cs">
+      <DependentUpon>FormAnimator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormNmlMonoBehaviour.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNmlMonoBehaviour.Designer.cs">
+      <DependentUpon>FormNmlMonoBehaviour.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRendererMeshAttributes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRendererMeshAttributes.Designer.cs">
+      <DependentUpon>FormRendererMeshAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormStringTable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormStringTable.Designer.cs">
+      <DependentUpon>FormStringTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormUnity3d.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormUnity3d.Designer.cs">
+      <DependentUpon>FormUnity3d.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAnimatorDragDrop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAnimatorDragDrop.Designer.cs">
+      <DependentUpon>FormAnimatorDragDrop.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormNormalsAndTangents.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNormalsAndTangents.Designer.cs">
+      <DependentUpon>FormNormalsAndTangents.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mqo.cs" />
+    <Compile Include="NmlMonoBehaviourEditor.cs" />
+    <Compile Include="PortableSettingsProvider.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="RenderObjectUnity.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Unity3d.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unity3dEditor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SB3Utility\SB3Utility.csproj">
+      <Project>{a351dfab-3235-4cea-9916-1bae973b65ae}</Project>
+      <Name>SB3Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SB3UtilityPlugins\SB3UtilityPlugins.csproj">
+      <Project>{76c12fb4-aebf-4271-9cca-6f04a25ed266}</Project>
+      <Name>SB3UtilityPlugins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SB3UtilityPP\SB3UtilityPP.csproj">
+      <Project>{5647b104-8f58-4867-b849-dac65d5243bd}</Project>
+      <Name>SB3UtilityPP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UnityBase\UnityBase.csproj">
+      <Project>{170a79dd-8b28-4e53-a1ef-5c923aadef0a}</Project>
+      <Name>UnityBase</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FormAnimation.resx">
+      <DependentUpon>FormAnimation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAnimationDragDrop.resx">
+      <DependentUpon>FormAnimationDragDrop.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAssetBundleManifest.resx">
+      <DependentUpon>FormAssetBundleManifest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAudioClip.resx">
+      <DependentUpon>FormAudioClip.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCamera.resx">
+      <DependentUpon>FormCamera.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMonoBehaviour.resx">
+      <DependentUpon>FormMonoBehaviour.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAnimator.resx">
+      <DependentUpon>FormAnimator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormNmlMonoBehaviour.resx">
+      <DependentUpon>FormNmlMonoBehaviour.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRendererMeshAttributes.resx">
+      <DependentUpon>FormRendererMeshAttributes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormStringTable.resx">
+      <DependentUpon>FormStringTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormUnity3d.resx">
+      <DependentUpon>FormUnity3d.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAnimatorDragDrop.resx">
+      <DependentUpon>FormAnimatorDragDrop.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormNormalsAndTangents.resx">
+      <DependentUpon>FormNormalsAndTangents.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormVersionWarning.resx">
+      <DependentUpon>FormVersionWarning.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\BackTrans-Grey.png" />
+    <None Include="Resources\BackTrans-Spiral.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

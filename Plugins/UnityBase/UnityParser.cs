@@ -631,6 +631,7 @@ namespace UnityPlugin
 						throw new Exception("Unsupported Unity3d file");
 					}
 
+					bool uncompress = false;
 					Offset = 0x2E;
 					try
 					{
@@ -672,6 +673,10 @@ namespace UnityPlugin
 								Chunks[i].Uncompressed = bufferReader.ReadInt32BE();
 								Chunks[i].Compressed = bufferReader.ReadInt32BE();
 								Chunks[i].Flags = bufferReader.ReadUInt16BE();
+								if ((Chunks[i].Flags & 1) != 0)
+								{
+									uncompress = true;
+								}
 								if (HeaderUncompressed != read)
 								{
 									if (i < 2 || i >= numChunks - 2)
@@ -715,9 +720,9 @@ namespace UnityPlugin
 					}
 					if (!Name.StartsWith("CAB-") && !Name.StartsWith("BuildPlayer-"))
 					{
-						Report.ReportLog("Warning! CAB-String in " + Path.GetFileName(FilePath) + " not correct: " + Name.Substring(0, 10) + "... len=" + Name.Length);
+						Report.ReportLog("Warning! CAB-String in " + Path.GetFileName(FilePath) + " not correct: \"" + (Name.Length > 10 ? Name.Substring(0, 10) + "..." : Name) + "\" len=" + Name.Length);
 					}
-					if (FileLength < FileLengthCopy)
+					if (uncompress)
 					{
 						Uncompressed = new MemoryStream();
 						try
@@ -1225,6 +1230,7 @@ namespace UnityPlugin
 									UnityClassID.MeshFilter,
 									UnityClassID.MeshRenderer,
 									UnityClassID.MonoBehaviour,
+									UnityClassID.NavMeshSettings,
 									UnityClassID.ParticleAnimator,
 									UnityClassID.ParticleRenderer,
 									UnityClassID.ParticleSystem,
@@ -1269,10 +1275,6 @@ namespace UnityPlugin
 					}
 					finally
 					{
-						if (stream != Uncompressed)
-						{
-							stream.Dispose();
-						}
 						AssetCabinet cabinet = Cabinet;
 						for (int cabIdx = 0; cabIdx == 0 || FileInfos != null && cabIdx < FileInfos.Count; cabIdx++)
 						{
@@ -1286,6 +1288,10 @@ namespace UnityPlugin
 								cabinet = FileInfos[cabIdx].Cabinet;
 							}
 							cabinet.SourceStream = null;
+						}
+						if (stream != Uncompressed)
+						{
+							stream.Dispose();
 						}
 						stream = null;
 					}
@@ -1361,7 +1367,7 @@ namespace UnityPlugin
 
 		void StreamTextures(DirectoryInfo dir)
 		{
-			if (Textures.Count == 0)
+			if (Textures.Count == 0 || texResS == null)
 			{
 				return;
 			}
@@ -1369,7 +1375,7 @@ namespace UnityPlugin
 			bool foreignTextures = false;
 			for (int i = 0; i < Textures.Count; i++)
 			{
-				if (Textures[i].file != Cabinet)
+				if (Textures[i].file.Parser != this)
 				{
 					foreignTextures = true;
 				}
@@ -1506,10 +1512,10 @@ namespace UnityPlugin
 			bool in_StreamingAssets = destPath.IndexOf("\\StreamingAssets\\", StringComparison.OrdinalIgnoreCase) >= 0;
 			bool in_abdata = destPath.IndexOf("\\abdata\\", StringComparison.OrdinalIgnoreCase) >= 0;
 			bool in_current = destPath.IndexOf("_Data\\", StringComparison.OrdinalIgnoreCase) >= 0;
-			/*if (!in_StreamingAssets && !in_abdata && !in_current)
+			if (!in_StreamingAssets && !in_abdata && !in_current)
 			{
 				throw new Exception("Resource file must be placed into a folder with the original folder structure!");
-			}*/
+			}
 			AssetCabinet cabinet = Cabinet;
 			for (int cabIdx = 0; cabIdx == 0 || FileInfos != null && cabIdx < FileInfos.Count; cabIdx++)
 			{

@@ -152,10 +152,12 @@ namespace SB3Utility
 		if (pMeshNodes != NULL)
 		{
 			delete pMeshNodes;
+			pMeshNodes = NULL;
 		}
 		if (pMaterials != NULL)
 		{
 			delete pMaterials;
+			pMaterials = NULL;
 		}
 		if (pTextures != NULL)
 		{
@@ -168,26 +170,32 @@ namespace SB3Utility
 				}
 			}
 			delete pTextures;
+			pTextures = NULL;
 		}
 		if (pExporter != NULL)
 		{
 			pExporter->Destroy();
+			pExporter = NULL;
 		}
 		if (pScene != NULL)
 		{
 			pScene->Destroy();
+			pScene = NULL;
 		}
 		if (pSdkManager != NULL)
 		{
 			pSdkManager->Destroy();
+			pSdkManager = NULL;
 		}
 		if (cFormat != NULL)
 		{
 			Marshal::FreeHGlobal((IntPtr)cFormat);
+			cFormat = NULL;
 		}
 		if (cDest != NULL)
 		{
 			Marshal::FreeHGlobal((IntPtr)cDest);
+			cDest = NULL;
 		}
 	}
 

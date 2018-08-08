@@ -533,5 +533,15 @@ namespace SB3Utility.Properties {
                 return ((bool)(this["Docking"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FbxImportAverageNormals {
+            get {
+                return ((bool)(this["FbxImportAverageNormals"]));
+            }
+        }
     }
 }

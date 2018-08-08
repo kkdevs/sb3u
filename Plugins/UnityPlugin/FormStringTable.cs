@@ -58,6 +58,11 @@ namespace UnityPlugin
 
 		private void FormStringTable_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if (Changed)
+			{
+				buttonApply_Click(null, null);
+			}
+
 			TextAsset textAsset = Gui.Scripting.Variables[ParserVar] as TextAsset;
 			if (textAsset != null)
 			{
@@ -90,6 +95,31 @@ namespace UnityPlugin
 					Text = Path.GetFileName(ToolTipText);
 				}
 				changed = value;
+
+				if (value)
+				{
+					try
+					{
+						Component asset = (Component)Gui.Scripting.Variables[ParserVar];
+						foreach (var pair in Gui.Scripting.Variables)
+						{
+							object obj = pair.Value;
+							if (obj is Unity3dEditor)
+							{
+								Unity3dEditor editor = (Unity3dEditor)obj;
+								if (editor.Parser == asset.file.Parser)
+								{
+									editor.Changed = true;
+									break;
+								}
+							}
+						}
+					}
+					catch (Exception e)
+					{
+						Utility.ReportException(e);
+					}
+				}
 			}
 		}
 
@@ -294,7 +324,7 @@ namespace UnityPlugin
 			dataGridViewContents.Visible = true;
 		}
 
-		private void buttonApply_Click(object sender, EventArgs e)
+		public void buttonApply_Click(object sender, EventArgs e)
 		{
 			try
 			{
@@ -402,20 +432,6 @@ namespace UnityPlugin
 						MonoBehaviour.StringToParamList(textMB, lines);
 					}
 				}
-
-				foreach (var pair in Gui.Scripting.Variables)
-				{
-					object obj = pair.Value;
-					if (obj is Unity3dEditor)
-					{
-						Unity3dEditor editor = (Unity3dEditor)obj;
-						if (editor.Parser == asset.file.Parser)
-						{
-							editor.Changed = true;
-							break;
-						}
-					}
-				}
 			}
 			catch (Exception ex)
 			{
@@ -459,6 +475,14 @@ namespace UnityPlugin
 		{
 			try
 			{
+				if (Changed)
+				{
+					checkBoxJoin.CheckedChanged -= checkBoxJoin_CheckedChanged;
+					checkBoxJoin.Checked ^= true;
+					buttonApply_Click(null, null);
+					checkBoxJoin.Checked ^= true;
+					checkBoxJoin.CheckedChanged += checkBoxJoin_CheckedChanged;
+				}
 				LoadContents();
 			}
 			catch (Exception ex)
@@ -484,6 +508,21 @@ namespace UnityPlugin
 						dataGridViewContents.Rows[rowIdx].Cells[i].Style.BackColor = Color.Red;
 						dataGridViewContents.Rows[rowIdx].Cells[i].ReadOnly = true;
 					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
+			}
+		}
+
+		private void editTextBoxJoinedContent_TextChanged(object sender, EventArgs e)
+		{
+			try
+			{
+				if (editTextBoxJoinedContent.Font.Bold)
+				{
+					Changed = true;
 				}
 			}
 			catch (Exception ex)

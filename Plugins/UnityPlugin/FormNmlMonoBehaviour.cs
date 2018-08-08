@@ -97,6 +97,12 @@ namespace UnityPlugin
 
 		void LoadNml()
 		{
+			HashSet<string> selectedItems = new HashSet<string>();
+			for (int i = 0; i < listViewNmlMeshes.SelectedItems.Count; i++)
+			{
+				var item = listViewNmlMeshes.SelectedItems[i];
+				selectedItems.Add(item.SubItems[0].Text);
+			}
 			listViewNmlMeshes.Items.Clear();
 			for (int i = 0; i < Editor.GenericMonos.Count; i++)
 			{
@@ -104,6 +110,14 @@ namespace UnityPlugin
 				item.SubItems.Add(Editor.GenericMonos[i].NormalMin.Count.ToString());
 				item.Tag = i;
 				listViewNmlMeshes.Items.Add(item);
+			}
+			foreach (string selectedItem in selectedItems)
+			{
+				ListViewItem item = listViewNmlMeshes.FindItemWithText(selectedItem);
+				if (item != null)
+				{
+					item.Selected = true;
+				}
 			}
 		}
 
@@ -154,51 +168,8 @@ namespace UnityPlugin
 			buttonNmlCompute.Enabled = false;
 			try
 			{
-				FormAnimator dstFormAnim = null;
-				string animatorName = Editor.Parser.m_Name.Substring(0, Editor.Parser.m_Name.Length - 4);
 				List<DockContent> formAnimators;
-				if (Gui.Docking.DockContents.TryGetValue(typeof(FormAnimator), out formAnimators))
-				{
-					foreach (var form in formAnimators)
-					{
-						FormAnimator formAnim = (FormAnimator)form;
-						AnimatorEditor ed = formAnim.Editor;
-						if (ed.Parser.m_GameObject.instance.m_Name.StartsWith(animatorName))
-						{
-							dstFormAnim = formAnim;
-							break;
-						}
-					}
-				}
-				if (dstFormAnim == null)
-				{
-					foreach (var form in formAnimators)
-					{
-						FormAnimator formAnim = (FormAnimator)form;
-						AnimatorEditor ed = formAnim.Editor;
-						int matchingMeshes = 0;
-						foreach (ListViewItem item in listViewNmlMeshes.SelectedItems)
-						{
-							var obj = Editor.GenericMonos[(int)item.Tag];
-							if (ed.GetMeshRendererId(obj.ObjectName) >= 0)
-							{
-								matchingMeshes++;
-							}
-						}
-						if (matchingMeshes == listViewNmlMeshes.SelectedItems.Count)
-						{
-							dstFormAnim = formAnim;
-							Report.ReportLog("Warning! Using Animator " + dstFormAnim.Text + " although it has a mismatching name.");
-							break;
-						}
-					}
-
-					if (dstFormAnim == null)
-					{
-						Report.ReportLog("No Animator beginning with " + Editor.Parser.m_Name.Substring(0, Editor.Parser.m_Name.Length - 4) + " has been opened.");
-						return;
-					}
-				}
+				FormAnimator dstFormAnim = GetFormAnimatorFromParserName(out formAnimators);
 
 				StringBuilder meshIds = new StringBuilder(20);
 				for (int i = 0; i < listViewNmlMeshes.SelectedItems.Count; i++)
@@ -265,6 +236,55 @@ namespace UnityPlugin
 			{
 				buttonNmlCompute.Enabled = true;
 			}
+		}
+
+		private FormAnimator GetFormAnimatorFromParserName(out List<DockContent> formAnimators)
+		{
+			FormAnimator dstFormAnim = null;
+			string animatorName = Editor.Parser.m_Name.Substring(0, Editor.Parser.m_Name.Length - 4);
+			if (Gui.Docking.DockContents.TryGetValue(typeof(FormAnimator), out formAnimators))
+			{
+				foreach (var form in formAnimators)
+				{
+					FormAnimator formAnim = (FormAnimator)form;
+					AnimatorEditor ed = formAnim.Editor;
+					if (ed.Parser.m_GameObject.instance.m_Name.StartsWith(animatorName))
+					{
+						dstFormAnim = formAnim;
+						break;
+					}
+				}
+			}
+			if (dstFormAnim == null)
+			{
+				foreach (var form in formAnimators)
+				{
+					FormAnimator formAnim = (FormAnimator)form;
+					AnimatorEditor ed = formAnim.Editor;
+					int matchingMeshes = 0;
+					foreach (ListViewItem item in listViewNmlMeshes.SelectedItems)
+					{
+						var obj = Editor.GenericMonos[(int)item.Tag];
+						if (ed.GetMeshRendererId(obj.ObjectName) >= 0)
+						{
+							matchingMeshes++;
+						}
+					}
+					if (matchingMeshes == listViewNmlMeshes.SelectedItems.Count)
+					{
+						dstFormAnim = formAnim;
+						Report.ReportLog("Warning! Using Animator " + dstFormAnim.Text + " although it has a mismatching name.");
+						break;
+					}
+				}
+
+				if (dstFormAnim == null)
+				{
+					throw new Exception("No Animator beginning with " + Editor.Parser.m_Name.Substring(0, Editor.Parser.m_Name.Length - 4) + " has been opened.");
+				}
+			}
+
+			return dstFormAnim;
 		}
 
 		private void listViewNmlMeshes_AfterLabelEdit(object sender, LabelEditEventArgs e)
@@ -511,6 +531,31 @@ namespace UnityPlugin
 			e.DrawBorder();
 			e.DrawText(TextFormatFlags.Default);
 			Report.ReportStatus(e.ToolTipText);
+		}
+
+		private void buttonNMLCopyNormals_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if (listViewNmlMeshes.SelectedItems.Count < 1)
+				{
+					return;
+				}
+
+				List<DockContent> formAnimators;
+				FormAnimator dstFormAnim = GetFormAnimatorFromParserName(out formAnimators);
+				Gui.Scripting.RunScript(EditorVar + ".CopyNormals(id=" + (int)listViewNmlMeshes.SelectedItems[0].Tag + ", dstAnimatorEditor=" + dstFormAnim.EditorVar + ", minOrMax=" + radioButtonNMLMaxNormals.Checked + ", setOrGet=" + (sender == buttonNMLGetNormals) + ")");
+				Changed = true;
+				LoadNml();
+				if (sender == buttonNMLGetNormals)
+				{
+					dstFormAnim.RecreateRenderObjects();
+				}
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
+			}
 		}
 	}
 }

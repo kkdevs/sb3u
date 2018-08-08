@@ -52,16 +52,22 @@
 			this.buttonNmlInsertMesh = new System.Windows.Forms.Button();
 			this.buttonNmlRemoveMesh = new System.Windows.Forms.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.buttonNMLGetNormals = new System.Windows.Forms.Button();
+			this.buttonNMLSetNormals = new System.Windows.Forms.Button();
 			this.groupBox10 = new System.Windows.Forms.GroupBox();
 			this.label58 = new System.Windows.Forms.Label();
 			this.label55 = new System.Windows.Forms.Label();
 			this.label56 = new System.Windows.Forms.Label();
 			this.trackBarNmlFactor = new System.Windows.Forms.TrackBar();
+			this.groupBox12 = new System.Windows.Forms.GroupBox();
+			this.radioButtonNMLMaxNormals = new System.Windows.Forms.RadioButton();
+			this.radioButtonNMLMinNormals = new System.Windows.Forms.RadioButton();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownNmlAdjacentDistanceSquared)).BeginInit();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox10.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.trackBarNmlFactor)).BeginInit();
+			this.groupBox12.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// listViewNmlMeshes
@@ -76,7 +82,7 @@
 			this.listViewNmlMeshes.LabelEdit = true;
 			this.listViewNmlMeshes.Location = new System.Drawing.Point(12, 12);
 			this.listViewNmlMeshes.Name = "listViewNmlMeshes";
-			this.listViewNmlMeshes.Size = new System.Drawing.Size(184, 94);
+			this.listViewNmlMeshes.Size = new System.Drawing.Size(184, 142);
 			this.listViewNmlMeshes.TabIndex = 2;
 			this.listViewNmlMeshes.UseCompatibleStateImageBehavior = false;
 			this.listViewNmlMeshes.View = System.Windows.Forms.View.Details;
@@ -108,7 +114,7 @@
 			// 
 			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(12, 311);
+			this.label1.Location = new System.Drawing.Point(12, 331);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(376, 78);
 			this.label1.TabIndex = 31;
@@ -162,7 +168,7 @@
 			this.groupBox1.Controls.Add(this.numericUpDownNmlAdjacentDistanceSquared);
 			this.groupBox1.Controls.Add(this.checkBoxNmlWorldCoordinates);
 			this.groupBox1.Controls.Add(this.label5);
-			this.groupBox1.Location = new System.Drawing.Point(12, 217);
+			this.groupBox1.Location = new System.Drawing.Point(12, 240);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(333, 74);
 			this.groupBox1.TabIndex = 174;
@@ -178,7 +184,7 @@
 			this.groupBox2.Controls.Add(this.comboBoxSourceMesh);
 			this.groupBox2.Controls.Add(this.comboBoxSourceAnimator);
 			this.groupBox2.Controls.Add(this.label2);
-			this.groupBox2.Location = new System.Drawing.Point(12, 123);
+			this.groupBox2.Location = new System.Drawing.Point(12, 160);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(433, 74);
 			this.groupBox2.TabIndex = 175;
@@ -288,6 +294,29 @@
 			this.toolTip1.OwnerDraw = true;
 			this.toolTip1.Draw += new System.Windows.Forms.DrawToolTipEventHandler(this.toolTip1_Draw);
 			// 
+			// buttonNMLGetNormals
+			// 
+			this.buttonNMLGetNormals.Location = new System.Drawing.Point(132, 16);
+			this.buttonNMLGetNormals.Name = "buttonNMLGetNormals";
+			this.buttonNMLGetNormals.Size = new System.Drawing.Size(50, 23);
+			this.buttonNMLGetNormals.TabIndex = 56;
+			this.buttonNMLGetNormals.Text = "Get";
+			this.toolTip1.SetToolTip(this.buttonNMLGetNormals, "Copies the selected Normals set of the NML\r\ninto the selected MeshRenderer.");
+			this.buttonNMLGetNormals.UseVisualStyleBackColor = true;
+			this.buttonNMLGetNormals.Click += new System.EventHandler(this.buttonNMLCopyNormals_Click);
+			// 
+			// buttonNMLSetNormals
+			// 
+			this.buttonNMLSetNormals.Location = new System.Drawing.Point(194, 16);
+			this.buttonNMLSetNormals.Name = "buttonNMLSetNormals";
+			this.buttonNMLSetNormals.Size = new System.Drawing.Size(50, 23);
+			this.buttonNMLSetNormals.TabIndex = 58;
+			this.buttonNMLSetNormals.Text = "Set";
+			this.toolTip1.SetToolTip(this.buttonNMLSetNormals, "Copies the Normals of the selected MeshRenderer\r\ninto the selected Normals set of" +
+        " the NML.");
+			this.buttonNMLSetNormals.UseVisualStyleBackColor = true;
+			this.buttonNMLSetNormals.Click += new System.EventHandler(this.buttonNMLCopyNormals_Click);
+			// 
 			// groupBox10
 			// 
 			this.groupBox10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -295,7 +324,7 @@
 			this.groupBox10.Controls.Add(this.label55);
 			this.groupBox10.Controls.Add(this.label56);
 			this.groupBox10.Controls.Add(this.trackBarNmlFactor);
-			this.groupBox10.Location = new System.Drawing.Point(202, 45);
+			this.groupBox10.Location = new System.Drawing.Point(202, 93);
 			this.groupBox10.Name = "groupBox10";
 			this.groupBox10.Size = new System.Drawing.Size(252, 61);
 			this.groupBox10.TabIndex = 20;
@@ -340,12 +369,49 @@
 			this.trackBarNmlFactor.Value = 20;
 			this.trackBarNmlFactor.ValueChanged += new System.EventHandler(this.trackBarNmlFactor_ValueChanged);
 			// 
+			// groupBox12
+			// 
+			this.groupBox12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox12.Controls.Add(this.buttonNMLGetNormals);
+			this.groupBox12.Controls.Add(this.radioButtonNMLMaxNormals);
+			this.groupBox12.Controls.Add(this.radioButtonNMLMinNormals);
+			this.groupBox12.Controls.Add(this.buttonNMLSetNormals);
+			this.groupBox12.Location = new System.Drawing.Point(202, 41);
+			this.groupBox12.Name = "groupBox12";
+			this.groupBox12.Size = new System.Drawing.Size(252, 46);
+			this.groupBox12.TabIndex = 176;
+			this.groupBox12.TabStop = false;
+			this.groupBox12.Text = "Normals";
+			// 
+			// radioButtonNMLMaxNormals
+			// 
+			this.radioButtonNMLMaxNormals.AutoSize = true;
+			this.radioButtonNMLMaxNormals.Location = new System.Drawing.Point(61, 19);
+			this.radioButtonNMLMaxNormals.Name = "radioButtonNMLMaxNormals";
+			this.radioButtonNMLMaxNormals.Size = new System.Drawing.Size(45, 17);
+			this.radioButtonNMLMaxNormals.TabIndex = 54;
+			this.radioButtonNMLMaxNormals.Text = "Max";
+			this.radioButtonNMLMaxNormals.UseVisualStyleBackColor = true;
+			// 
+			// radioButtonNMLMinNormals
+			// 
+			this.radioButtonNMLMinNormals.AutoSize = true;
+			this.radioButtonNMLMinNormals.Checked = true;
+			this.radioButtonNMLMinNormals.Location = new System.Drawing.Point(6, 19);
+			this.radioButtonNMLMinNormals.Name = "radioButtonNMLMinNormals";
+			this.radioButtonNMLMinNormals.Size = new System.Drawing.Size(42, 17);
+			this.radioButtonNMLMinNormals.TabIndex = 52;
+			this.radioButtonNMLMinNormals.TabStop = true;
+			this.radioButtonNMLMinNormals.Text = "Min";
+			this.radioButtonNMLMinNormals.UseVisualStyleBackColor = true;
+			// 
 			// FormNmlMonoBehaviour
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(463, 403);
+			this.ClientSize = new System.Drawing.Size(463, 423);
 			this.Controls.Add(this.groupBox10);
+			this.Controls.Add(this.groupBox12);
 			this.Controls.Add(this.buttonNmlRemoveMesh);
 			this.Controls.Add(this.buttonNmlInsertMesh);
 			this.Controls.Add(this.groupBox2);
@@ -364,6 +430,8 @@
 			this.groupBox10.ResumeLayout(false);
 			this.groupBox10.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.trackBarNmlFactor)).EndInit();
+			this.groupBox12.ResumeLayout(false);
+			this.groupBox12.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -396,5 +464,10 @@
 		private System.Windows.Forms.Label label55;
 		private System.Windows.Forms.Label label56;
 		private System.Windows.Forms.TrackBar trackBarNmlFactor;
+		private System.Windows.Forms.GroupBox groupBox12;
+		private System.Windows.Forms.Button buttonNMLGetNormals;
+		private System.Windows.Forms.RadioButton radioButtonNMLMaxNormals;
+		private System.Windows.Forms.RadioButton radioButtonNMLMinNormals;
+		private System.Windows.Forms.Button buttonNMLSetNormals;
 	}
 }

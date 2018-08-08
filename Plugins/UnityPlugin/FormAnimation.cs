@@ -1,14 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using SlimDX;
-using SlimDX.Direct3D11;
 
 using SB3Utility;
 
@@ -208,6 +207,8 @@ namespace UnityPlugin
 			comboBoxAnimationAnimator.Sorted = false;
 			comboBoxAnimationAnimator.Items.Insert(0, unlocked);
 			comboBoxAnimationAnimator.SelectedItem = unlocked;
+
+			editTextBoxAnimationFilenamePattern.Text = (string)Properties.Settings.Default["ExportAnimationFilenamePattern"];
 
 			AnimationExportFormat[] values = Enum.GetValues(typeof(AnimationExportFormat)) as AnimationExportFormat[];
 			string[] descriptions = new string[values.Length];
@@ -470,6 +471,10 @@ namespace UnityPlugin
 				}
 			}
 			dataGridViewAnimationClips.Rows.AddRange(newRows);
+			if (dataGridViewColumnComparerName.col >= 0)
+			{
+				dataGridViewAnimationClips.Sort(dataGridViewColumnComparerName);
+			}
 			foreach (DataGridViewRow row in dataGridViewAnimationClips.Rows)
 			{
 				AnimationClip clip = (AnimationClip)row.Cells[1].Value;
@@ -861,7 +866,7 @@ namespace UnityPlugin
 
 		}
 
-		private void buttonAnimationClipInsert_Click(object sender, EventArgs e)
+		private void buttonAnimationInsertSlot_Click(object sender, EventArgs e)
 		{
 			if (loadedAnimationClip == null)
 			{
@@ -880,7 +885,7 @@ namespace UnityPlugin
 			}
 		}
 
-		private void buttonAnimationClipDeleteSlot_Click(object sender, EventArgs e)
+		private void buttonAnimationDeleteSlot_Click(object sender, EventArgs e)
 		{
 			if (loadedAnimationClip == null)
 			{
@@ -903,6 +908,13 @@ namespace UnityPlugin
 		{
 			try
 			{
+				Tuple<string, FormAnimator> item = (Tuple<string, FormAnimator>)comboBoxAnimationAnimator.SelectedItem;
+				if ((FormAnimator)item.Item2 != null)
+				{
+					string isolator = ((FormAnimator)item.Item2).editTextBoxAnimatorAnimationIsolator.Text;
+					editTextBoxAnimationIsolator.Text = isolator;
+				}
+
 				if (dataGridViewAnimationClips.SelectedRows.Count > 0)
 				{
 					DataGridViewRow row = dataGridViewAnimationClips.SelectedRows[0];
@@ -1123,7 +1135,9 @@ namespace UnityPlugin
 				{
 					continue;
 				}
-				string bonePath = frame.GetTransformPath();
+
+				string isolator = ((FormAnimator)item.Item2).editTextBoxAnimatorAnimationIsolator.Text;
+				string bonePath = isolator.Length > 0 ? isolator + frame.GetTransformPath() : frame.GetTransformPath();
 				int numTrackFrames = Math.Max(track.Rotations != null ? track.Rotations.Length : 0, track.Scalings != null ? track.Scalings.Length : 0);
 				numTrackFrames = Math.Max(track.Translations != null ? track.Translations.Length : 0, numTrackFrames);
 				ScaleKey[] scaleKeys = new ScaleKey[numTrackFrames];
@@ -1631,10 +1645,19 @@ namespace UnityPlugin
 								AnimatorOverrideController animatorOverride = editor.Parser;
 								overrideIndex = animatorOverride.file.Components.IndexOf(animatorOverride);
 							}
-							Gui.Scripting.RunScript(EditorVar + ".ReplaceAnimation(animation=" + source.Variable + ".Animations[" + (int)source.Id + "], animator=" + formAnimator.ParserVar + ", id=" + dataGridViewAnimationClips.SelectedRows[0].HeaderCell.Value + ", overrideIndex=" + overrideIndex + ", resampleCount=" + dragOptions.numericResample.Value + ", linear=" + dragOptions.radioButtonInterpolationLinear.Checked + ", EulerFilter=" + (bool)Gui.Config["FbxExportAnimationEulerFilter"] + ", filterPrecision=" + ((float)Gui.Config["FbxExportAnimationFilterPrecision"]).ToFloatString() + ", method=\"" + dragOptions.comboBoxMethod.SelectedItem + "\", insertPos=" + dragOptions.numericPosition.Value + ", negateQuaternions=" + dragOptions.checkBoxNegateQuaternionFlips.Checked + ", filterTolerance=" + dragOptions.numericFilterTolerance.Value + ")");
+							string clipID = dataGridViewAnimationClips.SelectedRows[0].HeaderCell.Value.ToString();
+							Gui.Scripting.RunScript(EditorVar + ".ReplaceAnimation(animation=" + source.Variable + ".Animations[" + (int)source.Id + "], animator=" + formAnimator.ParserVar + ", id=" + clipID + ", overrideIndex=" + overrideIndex + ", resampleCount=" + dragOptions.numericResample.Value + ", linear=" + dragOptions.radioButtonInterpolationLinear.Checked + ", EulerFilter=" + (bool)Gui.Config["FbxExportAnimationEulerFilter"] + ", filterPrecision=" + ((float)Gui.Config["FbxExportAnimationFilterPrecision"]).ToFloatString() + ", method=\"" + dragOptions.comboBoxMethod.SelectedItem + "\", insertPos=" + dragOptions.numericPosition.Value + ", negateQuaternions=" + dragOptions.checkBoxNegateQuaternionFlips.Checked + ", filterTolerance=" + dragOptions.numericFilterTolerance.Value + ")");
 							Changed = Changed;
 
 							UnloadAnimation();
+							foreach (DataGridViewRow row in dataGridViewAnimationClips.Rows)
+							{
+								if ((string)row.HeaderCell.Value == clipID)
+								{
+									loadedAnimationClip = row;
+									break;
+								}
+							}
 							LoadAnimation();
 						}
 					}
@@ -1778,55 +1801,104 @@ namespace UnityPlugin
 					allFrames = true;
 				}
 
-				StringBuilder clipIds = new StringBuilder(1000);
-				if (dataGridViewAnimationClips.SelectedRows.Count > 0)
-				{
-					for (int i = 0; i < dataGridViewAnimationClips.Rows.Count; i++)
-					{
-						if (dataGridViewAnimationClips.Rows[i].Selected)
-						{
-							clipIds.Append(dataGridViewAnimationClips.Rows[i].HeaderCell.Value).Append(", ");
-						}
-					}
-					clipIds.Insert(0, "{ ");
-					clipIds.Length -= 2;
-					clipIds.Append(" }");
-				}
-				else
+				if (dataGridViewAnimationClips.SelectedRows.Count == 0)
 				{
 					Report.ReportLog("No clip selected");
 					return;
 				}
-
-				int overrideIndex = -1;
-				if (animatorOverrideEditorVar != null)
+				for (int j = 0; j < dataGridViewAnimationClips.SelectedRows.Count; j++)
 				{
-					AnimatorOverrideControllerEditor editor = (AnimatorOverrideControllerEditor)Gui.Scripting.Variables[animatorOverrideEditorVar];
-					AnimatorOverrideController animatorOverride = editor.Parser;
-					overrideIndex = animatorOverride.file.Components.IndexOf(animatorOverride);
-				}
+					StringBuilder clipIds = new StringBuilder(1000);
+					if (checkBoxExportFbx1ClipPerFile.Checked)
+					{
+						clipIds.Append(dataGridViewAnimationClips.SelectedRows[j].HeaderCell.Value).Append(", ");
+					}
+					else
+					{
+						for (int i = 0; i < dataGridViewAnimationClips.Rows.Count; i++)
+						{
+							if (dataGridViewAnimationClips.Rows[i].Selected)
+							{
+								clipIds.Append(dataGridViewAnimationClips.Rows[i].HeaderCell.Value).Append(", ");
+							}
+						}
+						j = dataGridViewAnimationClips.SelectedRows.Count;
+					}
+					clipIds.Insert(0, "{ ");
+					clipIds.Length -= 2;
+					clipIds.Append(" }");
 
-				Report.ReportLog("Started exporting to " + comboBoxAnimationExportFormat.SelectedItem + " format...");
-				Application.DoEvents();
+					int overrideIndex = -1;
+					if (animatorOverrideEditorVar != null)
+					{
+						AnimatorOverrideControllerEditor editor = (AnimatorOverrideControllerEditor)Gui.Scripting.Variables[animatorOverrideEditorVar];
+						AnimatorOverrideController animatorOverride = editor.Parser;
+						overrideIndex = animatorOverride.file.Components.IndexOf(animatorOverride);
+					}
 
-				int startKeyframe = Int32.Parse(textBoxExportFbxKeyframeRange.Text.Substring(0, textBoxExportFbxKeyframeRange.Text.LastIndexOf('-')));
-				int endKeyframe = Int32.Parse(textBoxExportFbxKeyframeRange.Text.Substring(textBoxExportFbxKeyframeRange.Text.LastIndexOf('-') + 1));
-				bool linear = checkBoxExportFbxLinearInterpolation.Checked;
-				bool allBones = true;
+					Report.ReportLog("Started exporting to " + comboBoxAnimationExportFormat.SelectedItem + " format...");
+					Application.DoEvents();
 
-				switch ((AnimationExportFormat)comboBoxAnimationExportFormat.SelectedIndex)
-				{
-				case AnimationExportFormat.ColladaFbx:
-					Gui.Scripting.RunScript("ExportFbx(animator=" + animatorVar + ", meshes=" + meshes + ", animationClips=" + EditorVar + ".GetAnimationClips(clipIds=" + clipIds + ", overrideIndex=" + overrideIndex + "), startKeyframe=" + startKeyframe + ", endKeyframe=" + endKeyframe + ", linear=" + linear + ", EulerFilter=" + (bool)Gui.Config["FbxExportAnimationEulerFilter"] + ", filterPrecision=" + ((float)Gui.Config["FbxExportAnimationFilterPrecision"]).ToFloatString() + ", path=\"" + Utility.GetDestFile(dir, "animation", ".dae") + "\", exportFormat=\".dae\", allFrames=" + allFrames + ", allBones=" + allBones + ", skins=" + true + ", morphs=" + checkBoxExportFbxMorphs.Checked + ", flatInbetween=" + checkBoxExportFbxFlatInbetween.Checked + ", boneSize=" + ((float)Properties.Settings.Default["FbxExportDisplayBoneSize"]).ToFloatString() + ", compatibility=False)");
-					break;
-				case AnimationExportFormat.Fbx:
-					Gui.Scripting.RunScript("ExportFbx(animator=" + animatorVar + ", meshes=" + meshes + ", animationClips=" + EditorVar + ".GetAnimationClips(clipIds=" + clipIds + ", overrideIndex=" + overrideIndex + "), startKeyframe=" + startKeyframe + ", endKeyframe=" + endKeyframe + ", linear=" + linear + ", EulerFilter=" + (bool)Gui.Config["FbxExportAnimationEulerFilter"] + ", filterPrecision=" + ((float)Gui.Config["FbxExportAnimationFilterPrecision"]).ToFloatString() + ", path=\"" + Utility.GetDestFile(dir, "animation", ".fbx") + "\", exportFormat=\".fbx\", allFrames=" + allFrames + ", allBones=" + allBones + ", skins=" + true + ", morphs=" + checkBoxExportFbxMorphs.Checked + ", flatInbetween=" + checkBoxExportFbxFlatInbetween.Checked + ", boneSize=" + ((float)Properties.Settings.Default["FbxExportDisplayBoneSize"]).ToFloatString() + ", compatibility=False)");
-					break;
-				case AnimationExportFormat.Fbx_2006:
-					Gui.Scripting.RunScript("ExportFbx(animator=" + animatorVar + ", meshes=" + meshes + ", animationClips=" + EditorVar + ".GetAnimationClips(clipIds=" + clipIds + ", overrideIndex=" + overrideIndex + "), startKeyframe=" + startKeyframe + ", endKeyframe=" + endKeyframe + ", linear=" + linear + ", EulerFilter=" + (bool)Gui.Config["FbxExportAnimationEulerFilter"] + ", filterPrecision=" + ((float)Gui.Config["FbxExportAnimationFilterPrecision"]).ToFloatString() + ", path=\"" + Utility.GetDestFile(dir, "animation", ".fbx") + "\", exportFormat=\".fbx\", allFrames=" + allFrames + ", allBones=" + allBones + ", skins=" + true + ", morphs=" + checkBoxExportFbxMorphs.Checked + ", flatInbetween=" + checkBoxExportFbxFlatInbetween.Checked + ", boneSize=" + ((float)Properties.Settings.Default["FbxExportDisplayBoneSize"]).ToFloatString() + ", compatibility=True)");
-					break;
-				default:
-					throw new Exception("Unexpected ExportFormat");
+					int startKeyframe = Int32.Parse(textBoxExportFbxKeyframeRange.Text.Substring(0, textBoxExportFbxKeyframeRange.Text.LastIndexOf('-')));
+					int endKeyframe = Int32.Parse(textBoxExportFbxKeyframeRange.Text.Substring(textBoxExportFbxKeyframeRange.Text.LastIndexOf('-') + 1));
+					bool linear = checkBoxExportFbxLinearInterpolation.Checked;
+					bool allBones = true;
+
+					string filename = string.Empty;
+					for (int i = 0; i < editTextBoxAnimationFilenamePattern.Text.Length; i++)
+					{
+						char c = editTextBoxAnimationFilenamePattern.Text[i];
+						if (c == '{')
+						{
+							string s = editTextBoxAnimationFilenamePattern.Text.Substring(i);
+							if (s.StartsWith("{Clip}", StringComparison.InvariantCultureIgnoreCase))
+							{
+								i += 6 - 1;
+								if (checkBoxExportFbx1ClipPerFile.Checked || dataGridViewAnimationClips.SelectedRows.Count == 1)
+								{
+									AnimationClip clip = (AnimationClip)dataGridViewAnimationClips.SelectedRows[j].Cells[1].Value;
+									filename += clip.m_Name;
+								}
+								else
+								{
+									filename += "animations";
+								}
+								continue;
+							}
+							else if (s.StartsWith("{Slot}", StringComparison.InvariantCultureIgnoreCase))
+							{
+								i += 6 - 1;
+								filename += dataGridViewAnimationClips.SelectedRows[j].HeaderCell.Value;
+								continue;
+							}
+							else if (s.StartsWith("{Animator}", StringComparison.InvariantCultureIgnoreCase))
+							{
+								filename += formAnimator.Editor.Parser.m_GameObject.instance.m_Name;
+								i += 10 - 1;
+								continue;
+							}
+						}
+						filename += c;
+					}
+					if (filename.Length == 0)
+					{
+						filename = "animation";
+					}
+
+					switch ((AnimationExportFormat)comboBoxAnimationExportFormat.SelectedIndex)
+					{
+					case AnimationExportFormat.ColladaFbx:
+						Gui.Scripting.RunScript("ExportFbx(animator=" + animatorVar + ", meshes=" + meshes + ", animationClips=" + EditorVar + ".GetAnimationClips(clipIds=" + clipIds + ", overrideIndex=" + overrideIndex + "), startKeyframe=" + startKeyframe + ", endKeyframe=" + endKeyframe + ", linear=" + linear + ", EulerFilter=" + (bool)Gui.Config["FbxExportAnimationEulerFilter"] + ", filterPrecision=" + ((float)Gui.Config["FbxExportAnimationFilterPrecision"]).ToFloatString() + ", path=\"" + Utility.GetDestFile(dir, filename, ".dae") + "\", exportFormat=\".dae\", allFrames=" + allFrames + ", allBones=" + allBones + ", skins=" + true + ", morphs=" + checkBoxExportFbxMorphs.Checked + ", flatInbetween=" + checkBoxExportFbxFlatInbetween.Checked + ", boneSize=" + ((float)Properties.Settings.Default["FbxExportDisplayBoneSize"]).ToFloatString() + ", compatibility=False)");
+						break;
+					case AnimationExportFormat.Fbx:
+						Gui.Scripting.RunScript("ExportFbx(animator=" + animatorVar + ", meshes=" + meshes + ", animationClips=" + EditorVar + ".GetAnimationClips(clipIds=" + clipIds + ", overrideIndex=" + overrideIndex + "), startKeyframe=" + startKeyframe + ", endKeyframe=" + endKeyframe + ", linear=" + linear + ", EulerFilter=" + (bool)Gui.Config["FbxExportAnimationEulerFilter"] + ", filterPrecision=" + ((float)Gui.Config["FbxExportAnimationFilterPrecision"]).ToFloatString() + ", path=\"" + Utility.GetDestFile(dir, filename, ".fbx") + "\", exportFormat=\".fbx\", allFrames=" + allFrames + ", allBones=" + allBones + ", skins=" + true + ", morphs=" + checkBoxExportFbxMorphs.Checked + ", flatInbetween=" + checkBoxExportFbxFlatInbetween.Checked + ", boneSize=" + ((float)Properties.Settings.Default["FbxExportDisplayBoneSize"]).ToFloatString() + ", compatibility=False)");
+						break;
+					case AnimationExportFormat.Fbx_2006:
+						Gui.Scripting.RunScript("ExportFbx(animator=" + animatorVar + ", meshes=" + meshes + ", animationClips=" + EditorVar + ".GetAnimationClips(clipIds=" + clipIds + ", overrideIndex=" + overrideIndex + "), startKeyframe=" + startKeyframe + ", endKeyframe=" + endKeyframe + ", linear=" + linear + ", EulerFilter=" + (bool)Gui.Config["FbxExportAnimationEulerFilter"] + ", filterPrecision=" + ((float)Gui.Config["FbxExportAnimationFilterPrecision"]).ToFloatString() + ", path=\"" + Utility.GetDestFile(dir, filename, ".fbx") + "\", exportFormat=\".fbx\", allFrames=" + allFrames + ", allBones=" + allBones + ", skins=" + true + ", morphs=" + checkBoxExportFbxMorphs.Checked + ", flatInbetween=" + checkBoxExportFbxFlatInbetween.Checked + ", boneSize=" + ((float)Properties.Settings.Default["FbxExportDisplayBoneSize"]).ToFloatString() + ", compatibility=True)");
+						break;
+					default:
+						throw new Exception("Unexpected ExportFormat");
+					}
 				}
 			}
 			catch (Exception ex)
@@ -2025,6 +2097,89 @@ namespace UnityPlugin
 			e.DrawBorder();
 			e.DrawText(TextFormatFlags.Default);
 			Report.ReportStatus(e.ToolTipText);
+		}
+
+		private void editTextBoxAnimationFilenamePattern_AfterEditTextChanged(object sender, EventArgs e)
+		{
+			Properties.Settings.Default["ExportAnimationFilenamePattern"] = editTextBoxAnimationFilenamePattern.Text;
+		}
+
+		static DataGridViewColumnComparer dataGridViewColumnComparerName = new DataGridViewColumnComparer();
+
+		private void dataGridViewAnimationClips_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left && e.ColumnIndex == 0)
+			{
+				switch (dataGridViewAnimationClips.Columns[0].HeaderCell.SortGlyphDirection)
+				{
+				case SortOrder.None:
+					dataGridViewAnimationClips.Columns[0].HeaderCell.SortGlyphDirection = SortOrder.Ascending;
+					dataGridViewColumnComparerName.asc = true;
+					dataGridViewColumnComparerName.col = 0;
+					break;
+				case SortOrder.Ascending:
+					dataGridViewAnimationClips.Columns[0].HeaderCell.SortGlyphDirection = SortOrder.Descending;
+					dataGridViewColumnComparerName.asc = false;
+					dataGridViewColumnComparerName.col = 0;
+					break;
+				case SortOrder.Descending:
+					dataGridViewAnimationClips.Columns[0].HeaderCell.SortGlyphDirection = SortOrder.None;
+					dataGridViewColumnComparerName.asc = true;
+					dataGridViewColumnComparerName.col = -1;
+					break;
+				}
+				dataGridViewAnimationClips.Sort(dataGridViewColumnComparerName);
+			}
+		}
+
+		class DataGridViewColumnComparer : IComparer
+		{
+			public int col;
+			public bool asc;
+
+			public DataGridViewColumnComparer()
+			{
+				col = -1;
+				asc = true;
+			}
+
+			public DataGridViewColumnComparer(int column)
+			{
+				col = column;
+				asc = true;
+			}
+
+			public int Compare(object x, object y)
+			{
+				int cmp;
+				bool validX = ((DataGridViewRow)x).Cells.Count > col;
+				bool validY = ((DataGridViewRow)y).Cells.Count > col;
+				if (!validX)
+				{
+					cmp = validY ? -1 : 0;
+				}
+				else if (!validY)
+				{
+					cmp = 1;
+				}
+				else if (col < 0)
+				{
+					int valueX = Int32.Parse((string)((DataGridViewRow)x).HeaderCell.Value);
+					int valueY = Int32.Parse((string)((DataGridViewRow)y).HeaderCell.Value);
+					cmp = valueX - valueY;
+				}
+				else
+				{
+					cmp = String.Compare((string)((DataGridViewRow)x).Cells[col].Value, (string)((DataGridViewRow)y).Cells[col].Value);
+					if (cmp == 0)
+					{
+						int valueX = Int32.Parse((string)((DataGridViewRow)x).HeaderCell.Value);
+						int valueY = Int32.Parse((string)((DataGridViewRow)y).HeaderCell.Value);
+						cmp = valueX - valueY;
+					}
+				}
+				return asc ? cmp : -cmp;
+			}
 		}
 	}
 }

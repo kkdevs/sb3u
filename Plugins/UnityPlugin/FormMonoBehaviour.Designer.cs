@@ -162,6 +162,7 @@
 			// 
 			// treeViewAdditionalMembers
 			// 
+			this.treeViewAdditionalMembers.AllowDrop = true;
 			this.treeViewAdditionalMembers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -172,6 +173,9 @@
 			this.treeViewAdditionalMembers.Size = new System.Drawing.Size(591, 215);
 			this.treeViewAdditionalMembers.TabIndex = 140;
 			this.treeViewAdditionalMembers.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewAdditionalMembers_AfterSelect);
+			this.treeViewAdditionalMembers.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeViewAdditionalMembers_DragDrop);
+			this.treeViewAdditionalMembers.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeViewAdditionalMembers_DragEnter);
+			this.treeViewAdditionalMembers.DragOver += new System.Windows.Forms.DragEventHandler(this.treeViewAdditionalMembers_DragOver);
 			this.treeViewAdditionalMembers.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.checkBoxAndTreeViewAndOtherButtons_KeyPress);
 			this.treeViewAdditionalMembers.MouseClick += new System.Windows.Forms.MouseEventHandler(this.treeViewAdditionalMembers_MouseClick);
 			// 

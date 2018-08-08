@@ -35,11 +35,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DX11TutCore">
-      <HintPath>..\..\lib\DX11TutCore.dll</HintPath>
-    </Reference>
-    <Reference Include="SlimDX">
-      <HintPath>..\..\lib\SlimDX.dll</HintPath>
+    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SB3UtilityExternalLibraries\SlimDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -49,8 +47,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WeifenLuo.WinFormsUI.Docking">
-      <HintPath>..\..\lib\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.5.0.15095, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SB3UtilityExternalLibraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -61,12 +60,19 @@
     <Compile Include="AssetBundleManifestEditor.cs" />
     <Compile Include="AudioClipEditor.cs" />
     <Compile Include="CameraEditor.cs" />
+    <Compile Include="FormLoadedByTypeDefinition.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLoadedByTypeDefinition.Designer.cs">
+      <DependentUpon>FormLoadedByTypeDefinition.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormVersionWarning.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormVersionWarning.Designer.cs">
       <DependentUpon>FormVersionWarning.cs</DependentUpon>
     </Compile>
+    <Compile Include="LoadedByTypeDefinitionEditor.cs" />
     <Compile Include="MonoBehaviourEditor.cs" />
     <Compile Include="UVNormalBlendMonoBehaviourEditor.cs" />
     <Compile Include="FormAnimation.cs">
@@ -168,6 +174,11 @@
     <Compile Include="Unity3dEditor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DX11TutCore\DX11TutCore.csproj">
+      <Project>{e81549e0-46a2-4b80-ac0f-2d23a88e2552}</Project>
+      <Name>DX11TutCore</Name>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\SB3Utility\SB3Utility.csproj">
       <Project>{a351dfab-3235-4cea-9916-1bae973b65ae}</Project>
       <Name>SB3Utility</Name>
@@ -200,6 +211,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormCamera.resx">
       <DependentUpon>FormCamera.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLoadedByTypeDefinition.resx">
+      <DependentUpon>FormLoadedByTypeDefinition.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMonoBehaviour.resx">
       <DependentUpon>FormMonoBehaviour.cs</DependentUpon>
@@ -245,8 +259,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>if not exist BackTrans-Grey.png (echo BackTrans-Grey.png missing! &amp;&amp; copy $(ProjectDir)Resources\BackTrans-Grey.png)
+if not exist BackTrans-Spiral.png (echo BackTrans-Spiral.png missing! &amp;&amp; copy $(ProjectDir)Resources\BackTrans-Spiral.png)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Reflection;
 using SlimDX;
 using SlimDX.Direct3D11;
 
@@ -24,6 +25,8 @@ namespace UnityPlugin
 
 		protected bool contentChanged = false;
 		private int defaultMaterial = 0;
+
+		static HashSet<string> msgFilter = new HashSet<string>();
 
 		public AnimatorEditor(Animator parser)
 		{
@@ -421,7 +424,11 @@ namespace UnityPlugin
 					UpdateMember(((Uarray)utype).Value[i], transformTable);
 				}
 			}
-			else if (!(utype is Ufloat) && !(utype is Uint8) && !(utype is Uint32) && !(utype is Uuint32))
+			else if (!(utype is Ufloat) && !(utype is Udouble) &&
+					!(utype is Uint8) &&
+					!(utype is Uint16) && !(utype is Uuint16) &&
+					!(utype is Uint32) && !(utype is Uuint32) &&
+					!(utype is Uint64) && !(utype is Uuint64))
 			{
 				Report.ReportLog(utype.Name + " " + utype.GetType() + " unhandled");
 			}
@@ -618,6 +625,7 @@ namespace UnityPlugin
 			Textures.Clear();
 
 			Parser = null;
+			Cabinet = null;
 			VirtualAvatar = null;
 		}
 
@@ -1018,7 +1026,19 @@ namespace UnityPlugin
 			parent.RemoveChild(frame);
 			if (Parser.m_Avatar.instance != null)
 			{
-				Parser.m_Avatar.instance.RemoveBone(frame.m_GameObject.instance.m_Name);
+				bool foundSibling = false;
+				foreach (Transform t in parent)
+				{
+					if (t != frame && t.m_GameObject.instance.m_Name == frame.m_GameObject.instance.m_Name)
+					{
+						foundSibling = true;
+						break;
+					}
+				}
+				if (!foundSibling)
+				{
+					Parser.m_Avatar.instance.RemoveBone(frame.m_GameObject.instance.m_Name);
+				}
 			}
 
 			if (Parser.file.Bundle != null)
@@ -1311,6 +1331,16 @@ namespace UnityPlugin
 						MergeFrame(src, dest);
 
 						srcParent.RemoveChild(j);
+						for (int k = 0; k < dest.m_GameObject.instance.m_Component.Count; k++)
+						{
+							var pair = dest.m_GameObject.instance.m_Component[k];
+							LinkedByGameObject asset = (LinkedByGameObject)pair.Value.asset;
+							if (!(asset is Transform))
+							{
+								src.m_GameObject.instance.AddLinkedComponent(asset);
+								dest.m_GameObject.instance.m_Component.RemoveAt(k--);
+							}
+						}
 						destParent.RemoveChild(i);
 						destParent.InsertChild(i, src);
 						break;
@@ -1495,6 +1525,7 @@ namespace UnityPlugin
 					}
 				}
 				vMesh.Flush();
+				Changed = true;
 			}
 		}
 
@@ -2881,20 +2912,8 @@ namespace UnityPlugin
 				monob.file.BeginLoadingSkippedComponents();
 				copy = monob.Clone(Cabinet);
 				Frames[frameId].m_GameObject.instance.AddLinkedComponent(copy);
-				do
-				{
-					HashSet<Tuple<Component, Component>> loopSet = new HashSet<Tuple<Component, Component>>(AssetCabinet.IncompleteClones);
-					AssetCabinet.IncompleteClones.Clear();
-					foreach (var pair in loopSet)
-					{
-						Component src = pair.Item1;
-						Component dest = pair.Item2;
-						Type t = src.GetType();
-						System.Reflection.MethodInfo info = t.GetMethod("CopyTo", new Type[] { t });
-						info.Invoke(src, new object[] { dest });
-					}
-				}
-				while (AssetCabinet.IncompleteClones.Count > 0);
+
+				Unity3dEditor.CompleteClones();
 			}
 			finally
 			{
@@ -2926,27 +2945,66 @@ namespace UnityPlugin
 		public void MergeLinkedByGameObject(LinkedByGameObject asset, int frameId)
 		{
 			Type t = asset.GetType();
-			System.Reflection.MethodInfo info = t.GetMethod("Clone", new Type[] { typeof(AssetCabinet) });
+			MethodInfo info = t.GetMethod("Clone", new Type[] { typeof(AssetCabinet) });
 			if (info == null)
 			{
 				string msg = "No Clone method for " + asset.classID();
-				Report.ReportLog(msg);
+				if (!msgFilter.Contains(msg))
+				{
+					Report.ReportLog(msg);
+				}
 				return;
 			}
 			LinkedByGameObject clone = (LinkedByGameObject)info.Invoke(asset, new object[] { Parser.file });
 			if (clone == null)
 			{
 				string msg = asset.classID() + "s cant be merged into game files.";
-				Report.ReportLog(msg);
+				if (!msgFilter.Contains(msg))
+				{
+					Report.ReportLog(msg);
+				}
 				return;
 			}
 			GameObject gameObj = Frames[frameId].m_GameObject.instance;
-			gameObj.AddLinkedComponent(clone);
+			LinkedByGameObject existing = gameObj.FindLinkedComponent(asset.classID());
+			bool found = false;
+			if (existing != null)
+			{
+				foreach (var pair in AssetCabinet.IncompleteClones)
+				{
+					if (pair.Item2 == clone)
+					{
+						AssetCabinet.IncompleteClones.Remove(pair);
+						AssetCabinet.IncompleteClones.Add
+						(
+							new Tuple<Component, Component>(pair.Item1, existing)
+						);
+						clone.file.RemoveSubfile(clone);
+						found = true;
+						break;
+					}
+				}
+			}
+			if (!found)
+			{
+				gameObj.AddLinkedComponent(clone);
+			}
+
+			Unity3dEditor.CompleteClones();
+
+			Changed = true;
+		}
+
+		[Plugin]
+		public void RemoveLinkedByGameObject(LinkedByGameObject asset)
+		{
+			asset.m_GameObject.instance.RemoveLinkedComponent(asset);
+			asset.file.RemoveSubfile(asset);
 			Changed = true;
 		}
 	}
 
-	public static partial class Plugins
+		public static partial class Plugins
 	{
 		[Plugin]
 		public static void CalculateNormals(object[] animatorEditors, object[] numMeshes, object[] meshes, double threshold)

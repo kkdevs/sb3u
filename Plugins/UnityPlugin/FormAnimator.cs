@@ -130,7 +130,7 @@ namespace UnityPlugin
 			StringBuilder sb = new StringBuilder();
 			foreach (var t in missingTypes)
 			{
-				if (!(bool)Gui.Scripting.RunScript(editorVar + ".AcquireTypeDefinition(clsIdString=\"" + t + "\")"))
+				if (!(bool)Gui.Scripting.RunScript(editorVar + ".AcquireTypeDefinition(clsIdString=\"" + t + "\", matchExactVersionOnly=" + false + ")"))
 				{
 					sb.Append(t.ToString()).Append(' ');
 				}
@@ -380,7 +380,7 @@ namespace UnityPlugin
 				MeshRenderer meshR = Editor.Meshes[id];
 				Transform meshTransform = meshR.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
 				HashSet<string> meshNames = new HashSet<string>() { meshTransform.GetTransformPath() };
-				renderObjectMeshes[id] = new RenderObjectUnity(Editor, meshNames);
+				renderObjectMeshes[id] = new RenderObjectUnity(Editor, meshNames, editTextBoxAnimatorAnimationIsolator.Text);
 
 				RenderObjectUnity renderObj = renderObjectMeshes[id];
 				renderObjectIds[id] = Gui.Renderer.AddRenderObject(renderObj);
@@ -1983,6 +1983,7 @@ namespace UnityPlugin
 						if (item.Item2 == mesh)
 						{
 							comboBoxMeshRendererMesh.SelectedIndex = i;
+							toolTip1.SetToolTip(comboBoxMeshRendererMesh, comboBoxMeshRendererMesh.Text);
 							break;
 						}
 					}
@@ -2905,26 +2906,6 @@ namespace UnityPlugin
 			loadedTexture = id;
 		}
 
-		List<TreeNode> FindObjectNode(string name, TreeNodeCollection nodes)
-		{
-			List<TreeNode> result = new List<TreeNode>();
-			FindObjectNode(name, nodes, result);
-			return result;
-		}
-
-		private void FindObjectNode(string name, TreeNodeCollection nodes, List<TreeNode> result)
-		{
-			foreach (TreeNode node in nodes)
-			{
-				if (node.Text == name)
-				{
-					result.Add(node);
-				}
-
-				FindObjectNode(name, node.Nodes, result);
-			}
-		}
-
 		TreeNode FindFrameNode(string name, TreeNodeCollection nodes)
 		{
 			foreach (TreeNode node in nodes)
@@ -3614,10 +3595,52 @@ namespace UnityPlugin
 					if (draggedItem.Tag is DragSource)
 					{
 						DragSource src = (DragSource)draggedItem.Tag;
-						if (src.Type == typeof(SkinnedMeshRenderer) || src.Type == typeof(MeshRenderer))
+						if (src.Type == typeof(MeshRenderer) || src.Type.IsSubclassOf(typeof(MeshRenderer)))
 						{
-							draggedItem = ((TreeNode)e.Item).Parent;
 							draggedMesh = Editor.Meshes[(int)src.Id];
+
+							TreeNode notSerObjDrop = new TreeNode();
+							List<TreeNode> notSerObj = new List<TreeNode>(new TreeNode[] { draggedItem, ((TreeNode)e.Item).Parent });
+							if (Editor.Materials.Count > 0)
+							{
+								HashSet<int> matIndices = new HashSet<int>();
+								HashSet<int> texIndices = new HashSet<int>();
+								foreach (PPtr<Material> matPtr in draggedMesh.m_Materials)
+								{
+									Material mat = matPtr.instance;
+									matIndices.Add(Editor.Materials.IndexOf(mat));
+									foreach (var matTex in mat.m_SavedProperties.m_TexEnvs)
+									{
+										Texture2D tex = matTex.Value.m_Texture.instance;
+										if (tex != null)
+										{
+											int texId = Editor.Textures.IndexOf(tex);
+											texIndices.Add(texId);
+										}
+									}
+								}
+
+								TreeNode materialsNode = treeViewObjectTree.Nodes[1];
+								foreach (TreeNode matNode in materialsNode.Nodes)
+								{
+									src = (DragSource)matNode.Tag;
+									if (matIndices.Contains((int)src.Id))
+									{
+										notSerObj.Add(matNode);
+									}
+								}
+								TreeNode texturesNode = treeViewObjectTree.Nodes[2];
+								foreach (TreeNode texNode in texturesNode.Nodes)
+								{
+									src = (DragSource)texNode.Tag;
+									if (texIndices.Contains((int)src.Id))
+									{
+										notSerObj.Add(texNode);
+									}
+								}
+								notSerObjDrop.Tag = notSerObj;
+							}
+							draggedItem = notSerObjDrop;
 						}
 						else if (src.Type == typeof(Matrix))
 						{
@@ -3634,51 +3657,13 @@ namespace UnityPlugin
 							EditorFormVar = Gui.Scripting.GetNextVariable("EditorFormVar");
 							Gui.Scripting.RunScript(EditorFormVar + " = SearchEditorForm(\"" + this.ToolTipText + "\")");
 						}
-						SetDraggedNode(draggedItem);
+						if (draggedItem.TreeView == treeViewObjectTree)
+						{
+							SetDraggedNode(draggedItem);
+						}
 					}
 
 					treeViewObjectTree.DoDragDrop(draggedItem, DragDropEffects.Copy);
-
-					if (draggedMesh != null && Editor.Materials.Count > 0)
-					{
-						HashSet<int> matIndices = new HashSet<int>();
-						HashSet<int> texIndices = new HashSet<int>();
-						foreach (PPtr<Material> matPtr in draggedMesh.m_Materials)
-						{
-							Material mat = matPtr.instance;
-							matIndices.Add(Editor.Materials.IndexOf(mat));
-							foreach (var matTex in mat.m_SavedProperties.m_TexEnvs)
-							{
-								Texture2D tex = matTex.Value.m_Texture.instance;
-								if (tex != null)
-								{
-									int texId = Editor.Textures.IndexOf(tex);
-									texIndices.Add(texId);
-								}
-							}
-						}
-
-						TreeNode materialsNode = treeViewObjectTree.Nodes[1];
-						foreach (TreeNode matNode in materialsNode.Nodes)
-						{
-							DragSource src = (DragSource)matNode.Tag;
-							if (matIndices.Contains((int)src.Id))
-							{
-								ItemDragEventArgs args = new ItemDragEventArgs(MouseButtons.None, matNode);
-								treeViewObjectTree_ItemDrag(null, args);
-							}
-						}
-						TreeNode texturesNode = treeViewObjectTree.Nodes[2];
-						foreach (TreeNode texNode in texturesNode.Nodes)
-						{
-							DragSource src = (DragSource)texNode.Tag;
-							if (texIndices.Contains((int)src.Id))
-							{
-								ItemDragEventArgs args = new ItemDragEventArgs(MouseButtons.None, texNode);
-								treeViewObjectTree_ItemDrag(null, args);
-							}
-						}
-					}
 				}
 			}
 			catch (Exception ex)
@@ -3819,7 +3804,7 @@ namespace UnityPlugin
 			{
 				if (selectedNode != null && treeViewObjectTree.SelectedNode == null)
 				{
-					TreeNode selectNode = SearchNode(selectedNode.Text, treeViewObjectTree.Nodes);
+					TreeNode selectNode = SearchNode(selectedNode, treeViewObjectTree.Nodes);
 					if (selectNode != null)
 					{
 						treeViewObjectTree.AfterSelect -= treeViewObjectTree_AfterSelect;
@@ -3833,18 +3818,61 @@ namespace UnityPlugin
 			}
 		}
 
-		private TreeNode SearchNode(string text, TreeNodeCollection childs)
+		private TreeNode SearchNode(TreeNode node, TreeNodeCollection childs)
 		{
 			foreach (TreeNode child in childs)
 			{
-				if (child.Text == text)
+				if (child.Text == node.Text)
 				{
-					return child;
+					if (child.Tag == node.Tag)
+					{
+						return child;
+					}
+					TreeNode childParent = child.Parent;
+					TreeNode nodeParent = node.Parent;
+					while (childParent != null && nodeParent != null)
+					{
+						if (childParent.Tag != null)
+						{
+							if (nodeParent.Tag == null)
+							{
+								break;
+							}
+							if (childParent.Tag == nodeParent.Tag)
+							{
+								return child;
+							}
+							if (childParent.Text != nodeParent.Text)
+							{
+								break;
+							}
+							if (((DragSource)childParent.Tag).Type == typeof(Transform))
+							{
+								if (((DragSource)nodeParent.Tag).Type == typeof(Transform))
+								{
+									return child;
+								}
+								else
+								{
+									break;
+								}
+							}
+						}
+						else
+						{
+							if (nodeParent.Tag != null)
+							{
+								break;
+							}
+						}
+						childParent = childParent.Parent;
+						nodeParent = nodeParent.Parent;
+					}
 				}
-				TreeNode node = SearchNode(text, child.Nodes);
-				if (node != null)
+				TreeNode search = SearchNode(node, child.Nodes);
+				if (search != null)
 				{
-					return node;
+					return search;
 				}
 			}
 			return null;
@@ -3854,7 +3882,7 @@ namespace UnityPlugin
 		{
 			if (node.Tag is DragSource)
 			{
-				if ((node.Parent != null) && !node.Checked && node.StateImageIndex != (int)CheckState.Indeterminate)
+				if (node.TreeView.FindForm() is FormWorkspace && (node.Parent != null) && !node.Checked && node.StateImageIndex != (int)CheckState.Indeterminate)
 				{
 					return;
 				}
@@ -3866,20 +3894,20 @@ namespace UnityPlugin
 				}
 
 				DragSource source = (DragSource)node.Tag;
-				if (source.Type == typeof(Transform))
+				AnimatorEditor srcEditor = Gui.Scripting.Variables[source.Variable] as AnimatorEditor;
+				if (srcEditor != null && srcEditor.Cabinet.VersionNumber != Editor.Cabinet.VersionNumber)
 				{
-					var srcEditor = (AnimatorEditor)Gui.Scripting.Variables[source.Variable];
-					if (srcEditor.Cabinet.VersionNumber != Editor.Cabinet.VersionNumber)
+					using (FormVersionWarning versionWarning = new FormVersionWarning(srcEditor.Cabinet.Parser, Editor.Parser.file.Parser))
 					{
-						using (FormVersionWarning versionWarning = new FormVersionWarning(srcEditor.Cabinet.Parser, Editor.Parser.file.Parser))
+						DialogResult result = versionWarning.ShowDialog();
+						if (result != DialogResult.OK)
 						{
-							DialogResult result = versionWarning.ShowDialog();
-							if (result != DialogResult.OK)
-							{
-								return;
-							}
+							return;
 						}
 					}
+				}
+				if (source.Type == typeof(Transform))
+				{
 					dragOptions.ShowPanel(FormAnimatorDragDrop.ShowPanelOption.Frame);
 					if (!dragOptions.checkBoxFrameDestinationLock.Checked)
 					{
@@ -3900,17 +3928,6 @@ namespace UnityPlugin
 					source.Type == typeof(NotLoaded) && ((NotLoaded)source.Id).classID() == UnityClassID.MonoBehaviour)
 				{
 					Component monob = (Component)source.Id;
-					if (monob.file.VersionNumber != Editor.Cabinet.VersionNumber)
-					{
-						using (FormVersionWarning versionWarning = new FormVersionWarning(monob.file.Parser, Editor.Parser.file.Parser))
-						{
-							DialogResult result = versionWarning.ShowDialog();
-							if (result != DialogResult.OK)
-							{
-								return;
-							}
-						}
-					}
 					if (dest == null)
 					{
 						Report.ReportLog("Drop onto a parent Transform, not into the Blue Area!");
@@ -3939,17 +3956,6 @@ namespace UnityPlugin
 				else if (source.Type == typeof(Material))
 				{
 					Material srcMat = ((AnimatorEditor)Gui.Scripting.Variables[source.Variable]).Materials[(int)source.Id];
-					if (srcMat.file.VersionNumber != Editor.Cabinet.VersionNumber)
-					{
-						using (FormVersionWarning versionWarning = new FormVersionWarning(srcMat.file.Parser, Editor.Parser.file.Parser))
-						{
-							DialogResult result = versionWarning.ShowDialog();
-							if (result != DialogResult.OK)
-							{
-								return;
-							}
-						}
-					}
 					if (!AcquireTypeDefinitions(new HashSet<UnityClassID>(new UnityClassID[] { UnityClassID.Material, UnityClassID.Shader })))
 					{
 						return;
@@ -3961,18 +3967,6 @@ namespace UnityPlugin
 				}
 				else if (source.Type == typeof(Texture2D))
 				{
-					var srcEditor = (AnimatorEditor)Gui.Scripting.Variables[source.Variable];
-					if (srcEditor.Cabinet.VersionNumber != Editor.Cabinet.VersionNumber)
-					{
-						using (FormVersionWarning versionWarning = new FormVersionWarning(srcEditor.Cabinet.Parser, Editor.Parser.file.Parser))
-						{
-							DialogResult result = versionWarning.ShowDialog();
-							if (result != DialogResult.OK)
-							{
-								return;
-							}
-						}
-					}
 					UnityClassID texType = srcEditor.Textures[(int)source.Id].classID();
 					if (!AcquireTypeDefinitions(new HashSet<UnityClassID>(new UnityClassID[] { texType })))
 					{
@@ -3983,16 +3977,24 @@ namespace UnityPlugin
 					RecreateTextures();
 					RefreshFormUnity();
 				}
-				else if (source.Type is LinkedByGameObject)
+				else if (source.Id is LinkedByGameObject)
 				{
+					UnityClassID type = ((LinkedByGameObject)source.Id).classID();
+					if (!AcquireTypeDefinitions(new HashSet<UnityClassID>(new UnityClassID[] { type })))
+					{
+						return;
+					}
+					Gui.Scripting.RunScript(EditorVar + ".MergeLinkedByGameObject(asset=" + source.Variable + ".Cabinet.Components[" + ((AnimatorEditor)Gui.Scripting.Variables[source.Variable]).Cabinet.Components.IndexOf((Component)source.Id) + "], frameId=" + (int)dest.Value.Id + ")");
+					RecreateFrames();
+					Changed = Changed;
 				}
 				else if (source.Type == typeof(ImportedFrame) && Editor.Parser != null)
 				{
 					dragOptions.ShowPanel(FormAnimatorDragDrop.ShowPanelOption.Frame);
 					if (!dragOptions.checkBoxFrameDestinationLock.Checked)
 					{
-						var srcEditor = (ImportedEditor)Gui.Scripting.Variables[source.Variable];
-						var srcFrameName = srcEditor.Frames[(int)source.Id].Name;
+						var iEditor = (ImportedEditor)Gui.Scripting.Variables[source.Variable];
+						var srcFrameName = iEditor.Frames[(int)source.Id].Name;
 						dragOptions.numericFrameId.Value = GetDestParentId(srcFrameName, dest);
 					}
 					if (dragOptions.checkBoxOkContinue.Checked || dragOptions.ShowDialog() == DialogResult.OK)
@@ -4006,7 +4008,7 @@ namespace UnityPlugin
 				else if (source.Type == typeof(WorkspaceMesh) && Editor.Parser != null)
 				{
 					dragOptions.ShowPanel(FormAnimatorDragDrop.ShowPanelOption.Mesh);
-					var srcEditor = (ImportedEditor)Gui.Scripting.Variables[source.Variable];
+					var iEditor = (ImportedEditor)Gui.Scripting.Variables[source.Variable];
 
 					if (!dragOptions.checkBoxMeshDestinationLock.Checked)
 					{
@@ -4017,12 +4019,13 @@ namespace UnityPlugin
 						}
 						if (destFrameId < 0)
 						{
-							destFrameId = Editor.GetFrameId(srcEditor.Imported.MeshList[(int)source.Id].Name);
+							destFrameId = Editor.GetFrameId(iEditor.Imported.MeshList[(int)source.Id].Name);
 							if (destFrameId < 0)
 							{
 								destFrameId = 0;
 							}
 						}
+						dragOptions.numericMeshId.Value = 0;
 						dragOptions.numericMeshId.Value = destFrameId;
 					}
 
@@ -4030,11 +4033,11 @@ namespace UnityPlugin
 					{
 						bool normalsCopyNear = false;
 						bool bonesCopyNear = false;
-						if (srcEditor.Meshes != null)
+						if (iEditor.Meshes != null)
 						{
 							normalsCopyNear = true;
 							bonesCopyNear = true;
-							foreach (ImportedMesh mesh in srcEditor.Meshes)
+							foreach (ImportedMesh mesh in iEditor.Meshes)
 							{
 								foreach (ImportedSubmesh submesh in mesh.SubmeshList)
 								{
@@ -4098,7 +4101,7 @@ namespace UnityPlugin
 							checkBoxStartEndKeyframe_Click(checkBoxMorphEndKeyframe, null);
 						}
 
-						WorkspaceMesh wsMesh = srcEditor.Meshes[(int)source.Id];
+						WorkspaceMesh wsMesh = iEditor.Meshes[(int)source.Id];
 						int frameId = (int)dragOptions.numericMeshId.Value;
 						if (dragOptions.checkBoxMeshCreateTransform.Checked)
 						{
@@ -4150,10 +4153,10 @@ namespace UnityPlugin
 									foreach (var meshR in fAnim.Editor.Meshes)
 									{
 										Mesh m = Operations.GetMesh(meshR);
-										int id = fAnim.Editor.Meshes.IndexOf(meshR);
 										if (m == updatedMesh)
 										{
-											if (fAnim.renderObjectMeshes[id] != null)
+											int id = fAnim.Editor.Meshes.IndexOf(meshR);
+											if (fAnim.renderObjectMeshes != null && fAnim.renderObjectMeshes[id] != null)
 											{
 												fAnim.RecreateMeshes();
 											}
@@ -4167,8 +4170,8 @@ namespace UnityPlugin
 				}
 				else if (source.Type == typeof(WorkspaceMaterial))
 				{
-					var srcEditor = (ImportedEditor)Gui.Scripting.Variables[source.Variable];
-					WorkspaceMaterial wsMat = srcEditor.Materials[(int)source.Id];
+					var iEditor = (ImportedEditor)Gui.Scripting.Variables[source.Variable];
+					WorkspaceMaterial wsMat = iEditor.Materials[(int)source.Id];
 					int opDiff = (int)Operations.SlotOperation.Equals;
 					string slotDiff = "_MainTex";
 					int opAmb = (int)Operations.SlotOperation.Equals;
@@ -4184,7 +4187,7 @@ namespace UnityPlugin
 					{
 						dragOptions.ShowPanel(FormAnimatorDragDrop.ShowPanelOption.Material);
 						dragOptions.Text = "Options for " + wsMat.Name;
-						ImportedMaterial mat = srcEditor.Imported.MaterialList[(int)source.Id];
+						ImportedMaterial mat = iEditor.Imported.MaterialList[(int)source.Id];
 						dragOptions.textBoxTextureDiffuse.Text = mat.Textures[0];
 						dragOptions.textBoxTextureAmbient.Text = mat.Textures[1];
 						dragOptions.textBoxTextureEmissive.Text = mat.Textures[2];
@@ -4235,8 +4238,8 @@ namespace UnityPlugin
 				}
 				else if (source.Type == typeof(ImportedTexture))
 				{
-					var srcEditor = (ImportedEditor)Gui.Scripting.Variables[source.Variable];
-					ImportedTexture tex = srcEditor.Imported.TextureList[(int)source.Id];
+					var iEditor = (ImportedEditor)Gui.Scripting.Variables[source.Variable];
+					ImportedTexture tex = iEditor.Imported.TextureList[(int)source.Id];
 					string texName;
 					Match m = Regex.Match(tex.Name, @"(.+)-([^-]+)(\..+)", RegexOptions.CultureInvariant);
 					if (m.Success)
@@ -4285,90 +4288,103 @@ namespace UnityPlugin
 
 		private void treeViewObjectTree_KeyUp(object sender, KeyEventArgs e)
 		{
-			if (e.KeyData == (Keys.Control | Keys.F))
+			try
 			{
-				textBoxObjectTreeSearchFor.Focus();
-				return;
-			}
+				if (e.KeyData == (Keys.Control | Keys.F))
+				{
+					textBoxObjectTreeSearchFor.Focus();
+					return;
+				}
 
-			if (treeViewObjectTree.SelectedNode == null)
-			{
-				return;
-			}
-			DragSource? src = treeViewObjectTree.SelectedNode.Tag as DragSource?;
-			if (src != null)
-			{
-				if (e.KeyData == MASS_DESTRUCTION_KEY_COMBINATION)
+				if (treeViewObjectTree.SelectedNode == null)
 				{
-					if (src.Value.Type == typeof(Transform))
-					{
-						buttonFrameRemove_Click(null, null);
-					}
-					else if (src.Value.Type == typeof(MeshRenderer) || src.Value.Type.IsSubclassOf(typeof(MeshRenderer)))
-					{
-						buttonMeshRemove_Click(null, null);
-					}
-					else if (src.Value.Type == typeof(Matrix))
-					{
-						buttonBoneRemove_Click(null, null);
-					}
-					else if (src.Value.Type == typeof(Material))
-					{
-						buttonMaterialRemove_Click(null, null);
-					}
-					else if (src.Value.Type == typeof(Texture2D))
-					{
-						buttonTextureRemove_Click(null, null);
-					}
+					return;
 				}
-				else if (e.KeyData == Keys.Enter && src.Value.Id is MonoBehaviour)
+				DragSource? src = treeViewObjectTree.SelectedNode.Tag as DragSource?;
+				if (src != null)
 				{
-					treeViewObjectTree_DoubleClick(null, null);
-				}
-				else if (e.KeyData == (Keys.Control | Keys.P))
-				{
-					if (src.Value.Type == typeof(Transform))
+					if (e.KeyData == MASS_DESTRUCTION_KEY_COMBINATION)
 					{
-						Transform t = Editor.Frames[(int)src.Value.Id];
-						string transformPathInfo = string.Empty;
-						if (Editor.Parser.m_Avatar.instance != null)
+						if (src.Value.Type == typeof(Transform))
 						{
-							transformPathInfo = " full path=\"" + Editor.GetTransformPath(t) + "\"";
+							buttonFrameRemove_Click(null, null);
 						}
-						Report.ReportLog(t.classID() + " " + t.m_GameObject.instance.m_Name + " PathID=" + t.pathID + transformPathInfo + " GameObject PathID=" + t.m_GameObject.m_PathID);
+						else if (src.Value.Type == typeof(MeshRenderer) || src.Value.Type.IsSubclassOf(typeof(MeshRenderer)))
+						{
+							buttonMeshRemove_Click(null, null);
+						}
+						else if (src.Value.Type == typeof(Matrix))
+						{
+							buttonBoneRemove_Click(null, null);
+						}
+						else if (src.Value.Type == typeof(Material))
+						{
+							buttonMaterialRemove_Click(null, null);
+						}
+						else if (src.Value.Type == typeof(Texture2D))
+						{
+							buttonTextureRemove_Click(null, null);
+						}
+						else if (src.Value.Id is LinkedByGameObject)
+						{
+							Gui.Scripting.RunScript(EditorVar + ".RemoveLinkedByGameObject(asset=" + src.Value.Variable + ".Cabinet.Components[" + ((AnimatorEditor)Gui.Scripting.Variables[src.Value.Variable]).Cabinet.Components.IndexOf((Component)src.Value.Id) + "])");
+							RecreateFrames();
+							Changed = Changed;
+						}
 					}
-					else if (src.Value.Type == typeof(MeshRenderer) || src.Value.Type.IsSubclassOf(typeof(MeshRenderer)))
+					else if (e.KeyData == Keys.Enter && src.Value.Id is MonoBehaviour)
 					{
-						MeshRenderer mr = Editor.Meshes[(int)src.Value.Id];
-						Report.ReportLog(mr.classID() + " " + mr.m_GameObject.instance.m_Name + " PathID=" + mr.pathID);
+						treeViewObjectTree_DoubleClick(null, null);
 					}
-					else if (src.Value.Id is LinkedByGameObject)
+					else if (e.KeyData == (Keys.Control | Keys.P))
 					{
-						LinkedByGameObject lg = (LinkedByGameObject)src.Value.Id;
-						Report.ReportLog(lg.classID() + " " + lg.m_GameObject.instance.m_Name + " PathID=" + lg.pathID);
+						if (src.Value.Type == typeof(Transform))
+						{
+							Transform t = Editor.Frames[(int)src.Value.Id];
+							string transformPathInfo = string.Empty;
+							if (Editor.Parser.m_Avatar.instance != null)
+							{
+								transformPathInfo = " full path=\"" + Editor.GetTransformPath(t) + "\"";
+							}
+							Report.ReportLog(t.classID() + " " + t.m_GameObject.instance.m_Name + " PathID=" + t.pathID + transformPathInfo + " GameObject PathID=" + t.m_GameObject.m_PathID);
+						}
+						else if (src.Value.Type == typeof(MeshRenderer) || src.Value.Type.IsSubclassOf(typeof(MeshRenderer)))
+						{
+							MeshRenderer mr = Editor.Meshes[(int)src.Value.Id];
+							Report.ReportLog(mr.classID() + " " + mr.m_GameObject.instance.m_Name + " PathID=" + mr.pathID);
+						}
+						else if (src.Value.Id is LinkedByGameObject)
+						{
+							LinkedByGameObject lg = (LinkedByGameObject)src.Value.Id;
+							Report.ReportLog(lg.classID() + " " + lg.m_GameObject.instance.m_Name + " PathID=" + lg.pathID);
+						}
+						else if (src.Value.Type == typeof(Material))
+						{
+							Material mat = Editor.Materials[(int)src.Value.Id];
+							Report.ReportLog(mat.classID() + " " + mat.m_Name + " PathID=" + mat.pathID + (mat.file != Editor.Cabinet ? " in " + mat.file.Parser.GetCabinetName(mat.file) : ""));
+						}
+						else if (src.Value.Type == typeof(Texture2D))
+						{
+							Texture2D tex = Editor.Textures[(int)src.Value.Id];
+							Report.ReportLog(tex.classID() + " " + tex.m_Name + " PathID=" + tex.pathID + (tex.file != Editor.Cabinet ? " in " + tex.file.Parser.GetCabinetName(tex.file) : ""));
+						}
+						else if (src.Value.Type == typeof(Animator))
+						{
+							Transform frame = Editor.Frames[(int)src.Value.Id];
+							Animator animator = frame.m_GameObject.instance.FindLinkedComponent(UnityClassID.Animator);
+							Report.ReportLog(animator.classID() + " " + animator.m_GameObject.instance.m_Name + " PathID=" + animator.pathID);
+						}
+						e.Handled = true;
 					}
-					else if (src.Value.Type == typeof(Material))
-					{
-						Material mat = Editor.Materials[(int)src.Value.Id];
-						Report.ReportLog(mat.classID() + " " + mat.m_Name + " PathID=" + mat.pathID + (mat.file != Editor.Cabinet ? " in " + mat.file.Parser.GetCabinetName(mat.file) : ""));
-					}
-					else if (src.Value.Type == typeof(Texture2D))
-					{
-						Texture2D tex = Editor.Textures[(int)src.Value.Id];
-						Report.ReportLog(tex.classID() + " " + tex.m_Name + " PathID=" + tex.pathID + (tex.file != Editor.Cabinet ? " in " + tex.file.Parser.GetCabinetName(tex.file) : ""));
-					}
-					else if (src.Value.Type == typeof(Animator))
-					{
-						Transform frame = Editor.Frames[(int)src.Value.Id];
-						Animator animator = frame.m_GameObject.instance.FindLinkedComponent(UnityClassID.Animator);
-						Report.ReportLog(animator.classID() + " " + animator.m_GameObject.instance.m_Name + " PathID=" + animator.pathID);
-					}
-					e.Handled = true;
 				}
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
 			}
 		}
 
-		private void toolStripTextBoxSearchString_KeyUp(object sender, KeyEventArgs e)
+		private void textBoxObjectTreeSearchFor_KeyUp(object sender, KeyEventArgs e)
 		{
 			try
 			{
@@ -4382,7 +4398,7 @@ namespace UnityPlugin
 							break;
 						}
 					}
-					List<TreeNode> nodes = FindObjectNode(textBoxObjectTreeSearchFor.Text, treeViewObjectTree.Nodes);
+					List<TreeNode> nodes = Extensions.FindObjectNode(textBoxObjectTreeSearchFor.Text, treeViewObjectTree.Nodes);
 					if (nodes.Count > 0)
 					{
 						if (treeViewObjectTree.SelectedNode == null || treeViewObjectTree.SelectedNode.Text != textBoxObjectTreeSearchFor.Text)
@@ -4575,6 +4591,19 @@ namespace UnityPlugin
 			InitTextures();
 			RecreateRenderObjects();
 			RecreateCrossRefs();
+			if (loadedMaterial >= 0)
+			{
+				loadedMaterial = -1;
+				for (int i = 0; i < Editor.Materials.Count; i++)
+				{
+					Material m = Editor.Materials[i];
+					if (m.m_Name == textBoxMatName.Text)
+					{
+						loadedMaterial = i;
+						break;
+					}
+				}
+			}
 			LoadMaterial(loadedMaterial);
 			if (oldLoadedMesh != -1 && oldLoadedMesh < Editor.Meshes.Count)
 			{
@@ -5361,18 +5390,21 @@ namespace UnityPlugin
 				Changed = Changed;
 				if (checkBoxFrameMatrixUpdate.Checked)
 				{
-					Transform frame = Editor.Frames[loadedFrame];
-					m = Transform.WorldTransform(frame);
-					m.Invert();
+					Transform boneFrame = Editor.Frames[loadedFrame];
+					Matrix boneFrameWorld = Transform.WorldTransform(boneFrame);
 
 					for (int i = 0; i < Editor.Meshes.Count; i++)
 					{
 						SkinnedMeshRenderer smr = Editor.Meshes[i] as SkinnedMeshRenderer;
 						if (smr != null && smr.m_Mesh.instance != null)
 						{
-							int boneIdx = Operations.FindBoneIndex(smr.m_Bones, frame);
+							int boneIdx = Operations.FindBoneIndex(smr.m_Bones, boneFrame);
 							if (boneIdx >= 0)
 							{
+								Transform meshTransform = smr.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
+								Matrix meshTransformDivisor = Matrix.Invert(Transform.WorldTransform(meshTransform));
+								m = Matrix.Invert(boneFrameWorld * meshTransformDivisor);
+
 								command = EditorVar + ".SetBoneMatrix(meshId=" + i + ", boneId=" + boneIdx;
 								for (int j = 0; j < 4; j++)
 								{
@@ -5675,7 +5707,8 @@ namespace UnityPlugin
 					Matrix boneFrameMatrix = newBoneMatrix;
 					boneFrameMatrix.Invert();
 					m.Invert();
-					boneFrameMatrix = boneFrameMatrix * m;
+					Transform meshTransform = meshFromBone.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
+					boneFrameMatrix = boneFrameMatrix * Transform.WorldTransform(meshTransform) * m;
 
 					command = EditorVar + ".SetFrameMatrix(id=" + Editor.Frames.IndexOf(frame);
 					for (int i = 0; i < 4; i++)
@@ -5744,7 +5777,7 @@ namespace UnityPlugin
 								MeshRenderer meshR = Editor.Meshes[id];
 								Transform meshTransform = meshR.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
 								HashSet<string> meshNames = new HashSet<string>() { meshTransform.GetTransformPath() };
-								renderObjectMeshes[id] = new RenderObjectUnity(Editor, meshNames);
+								renderObjectMeshes[id] = new RenderObjectUnity(Editor, meshNames, editTextBoxAnimatorAnimationIsolator.Text);
 							}
 							RenderObjectUnity renderObj = renderObjectMeshes[id];
 							if (renderObjectIds[id] == -1)
@@ -6384,7 +6417,7 @@ namespace UnityPlugin
 				return;
 			}
 
-			RenderObjectUnity renderObj = renderObjectMeshes[loadedMesh];
+			RenderObjectUnity renderObj = loadedMesh < renderObjectMeshes.Count ? renderObjectMeshes[loadedMesh] : null;
 			if (renderObj != null)
 			{
 				renderObj.HighlightSubmesh.Clear();
@@ -8876,17 +8909,34 @@ namespace UnityPlugin
 					if (tag.Id is MonoBehaviour)
 					{
 						MonoBehaviour mb = (MonoBehaviour)tag.Id;
-						string formUnityVar = null;
 						foreach (var pair in Gui.Scripting.Variables)
 						{
 							if (pair.Value is FormUnity3d && ((FormUnity3d)pair.Value).Editor.Parser == mb.file.Parser)
 							{
-								formUnityVar = pair.Key;
+								string formUnityVar = pair.Key;
 								int componentIdx = Editor.Parser.file.Components.IndexOf(mb);
 								DockContent formMonoBehaviour = (DockContent)Gui.Scripting.RunScript(formUnityVar + ".OpenMonoBehaviour(componentIndex=" + componentIdx + ")", false);
 								if (formMonoBehaviour != null)
 								{
 									formMonoBehaviour.Activate();
+								}
+								break;
+							}
+						}
+					}
+					if (tag.Id is LoadedByTypeDefinition)
+					{
+						LoadedByTypeDefinition loadedByTypeDef = (LoadedByTypeDefinition)tag.Id;
+						foreach (var pair in Gui.Scripting.Variables)
+						{
+							if (pair.Value is FormUnity3d && ((FormUnity3d)pair.Value).Editor.Parser == loadedByTypeDef.file.Parser)
+							{
+								string formUnityVar = pair.Key;
+								int componentIdx = Editor.Parser.file.Components.IndexOf(loadedByTypeDef);
+								DockContent formLoadedByTypeDef = (DockContent)Gui.Scripting.RunScript(formUnityVar + ".OpenLoadedByTypeDefinition(componentIndex=" + componentIdx + ")", false);
+								if (formLoadedByTypeDef != null)
+								{
+									formLoadedByTypeDef.Activate();
 								}
 								break;
 							}
@@ -9087,6 +9137,18 @@ namespace UnityPlugin
 			e.DrawBorder();
 			e.DrawText(TextFormatFlags.Default);
 			Report.ReportStatus(e.ToolTipText);
+		}
+
+		private void editTextBoxAnimatorAnimationIsolator_AfterEditTextChanged(object sender, EventArgs e)
+		{
+			try
+			{
+				RecreateRenderObjects();
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
+			}
 		}
 	}
 }

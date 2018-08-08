@@ -62,8 +62,9 @@
 			this.definedVariablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsDockingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.fbxAnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.fbxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.averageNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.negateQuaternionFlipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.forceTypeSampledToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -227,7 +228,7 @@
 			// 
 			this.optionsDockingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pluginsToolStripMenuItem,
-            this.fbxAnimationToolStripMenuItem,
+            this.fbxToolStripMenuItem,
             this.mQOImportVertexScalingToolStripMenuItem,
             this.swapThresholdMBToolStripMenuItem,
             this.textSizesToolStripMenuItem,
@@ -243,19 +244,20 @@
 			this.pluginsToolStripMenuItem.Text = "&Plugins";
 			this.pluginsToolStripMenuItem.Click += new System.EventHandler(this.settingsPluginsToolStripMenuItem_Click);
 			// 
-			// fbxAnimationToolStripMenuItem
+			// fbxToolStripMenuItem
 			// 
-			this.fbxAnimationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.fbxToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.importOptionsToolStripMenuItem,
+            this.averageNormalsToolStripMenuItem,
             this.negateQuaternionFlipsToolStripMenuItem,
             this.forceTypeSampledToolStripMenuItem,
             this.toolStripSeparator1,
             this.exportToolStripMenuItem,
             this.eulerFilterToolStripMenuItem,
             this.filterPrecisionToolStripMenuItem});
-			this.fbxAnimationToolStripMenuItem.Name = "fbxAnimationToolStripMenuItem";
-			this.fbxAnimationToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-			this.fbxAnimationToolStripMenuItem.Text = "Fbx Animation";
+			this.fbxToolStripMenuItem.Name = "fbxToolStripMenuItem";
+			this.fbxToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+			this.fbxToolStripMenuItem.Text = "Fbx";
 			// 
 			// importOptionsToolStripMenuItem
 			// 
@@ -265,6 +267,17 @@
 			this.importOptionsToolStripMenuItem.Name = "importOptionsToolStripMenuItem";
 			this.importOptionsToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
 			this.importOptionsToolStripMenuItem.Text = "Import Options";
+			// 
+			// averageNormalsToolStripMenuItem
+			// 
+			this.averageNormalsToolStripMenuItem.Checked = true;
+			this.averageNormalsToolStripMenuItem.CheckOnClick = true;
+			this.averageNormalsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.averageNormalsToolStripMenuItem.Name = "averageNormalsToolStripMenuItem";
+			this.averageNormalsToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+			this.averageNormalsToolStripMenuItem.Text = "Average Normals";
+			this.averageNormalsToolStripMenuItem.ToolTipText = "When checked all normals for a vertex will be averaged.\r\nUnchecked will allow to " +
+    "import split normlals.";
 			// 
 			// negateQuaternionFlipsToolStripMenuItem
 			// 
@@ -445,7 +458,7 @@
 			// toolStripStatusLabel
 			// 
 			this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-			this.toolStripStatusLabel.Size = new System.Drawing.Size(1144, 17);
+			this.toolStripStatusLabel.Size = new System.Drawing.Size(1175, 17);
 			this.toolStripStatusLabel.Spring = true;
 			this.toolStripStatusLabel.Text = "Status";
 			this.toolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -572,7 +585,7 @@
 		private System.Windows.Forms.ToolStripMenuItem viewScriptToolStripMenuItem;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
 		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem fbxAnimationToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem fbxToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem eulerFilterToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem filterPrecisionToolStripMenuItem;
 		private ToolStripEditTextBox toolStripEditTextBoxFilterPrecision;
@@ -594,6 +607,7 @@
 		private ToolStripEditTextBox toolStripEditTextBoxMQOImportVertexScaling;
 		private System.Windows.Forms.ToolStripMenuItem dockingToolStripMenuItem;
 		private System.Windows.Forms.ToolTip toolTip1;
+		private System.Windows.Forms.ToolStripMenuItem averageNormalsToolStripMenuItem;
 	}
 }
 

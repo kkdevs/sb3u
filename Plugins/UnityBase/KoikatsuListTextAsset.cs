@@ -2,17 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MessagePack;
 
 using SB3Utility;
 
 namespace UnityPlugin
 {
-	public class ChaListData
-	{
-
-	}
-
 	public class KoikatsuListTextAsset
 	{
 		private static Dictionary<string, Type> fieldTypes = null;

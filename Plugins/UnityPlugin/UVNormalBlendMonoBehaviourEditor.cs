@@ -141,6 +141,12 @@ namespace UnityPlugin
 				{
 					dstVertList.AddRange(dstVMesh.submeshes[i].vertexList);
 				}
+				Transform meshTransform = dstSMesh.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
+				Matrix meshTransformMatrix = Transform.WorldTransform(meshTransform);
+				foreach (var vert in dstVertList)
+				{
+					vert.position = Vector3.TransformCoordinate(vert.position, meshTransformMatrix);
+				}
 
 				int srcMeshRId = srcAnimatorEditor.GetMeshRendererId(srcUVNBMeshId < 0 ? dstSMesh.m_GameObject.instance.m_Name : srcUVNBEditor.Datas[srcUVNBMeshId].rendererName);
 				SkinnedMeshRenderer srcSMesh = (SkinnedMeshRenderer)srcAnimatorEditor.Meshes[srcMeshRId];
@@ -149,6 +155,12 @@ namespace UnityPlugin
 				for (int i = 1; i < srcVMesh.submeshes.Count; i++)
 				{
 					srcVertList.AddRange(srcVMesh.submeshes[i].vertexList);
+				}
+				meshTransform = srcSMesh.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
+				meshTransformMatrix = Transform.WorldTransform(meshTransform);
+				foreach (var vert in srcVertList)
+				{
+					vert.position = Vector3.TransformCoordinate(vert.position, meshTransformMatrix);
 				}
 
 				UVNormalBlendMonoBehaviour.Data srcData = srcUVNBMeshId < 0
@@ -249,7 +261,7 @@ namespace UnityPlugin
 						Matrix worldTransform;
 						if (worldCoordinates)
 						{
-							Transform meshTransform = adjMeshR.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
+							meshTransform = adjMeshR.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
 							worldTransform = Transform.WorldTransform(meshTransform);
 						}
 						else

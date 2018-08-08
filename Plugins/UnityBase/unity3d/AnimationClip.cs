@@ -4,7 +4,6 @@ using System.IO;
 using SlimDX;
 
 using SB3Utility;
-using System.Text;
 
 namespace UnityPlugin
 {
@@ -983,7 +982,7 @@ namespace UnityPlugin
 
 	public class GenericBinding
 	{
-		public uint path { get; set; } // needs translation
+		public uint path { get; set; }
 		public uint attribute { get; set; }
 		public PPtr<Object> script { get; set; }
 		public uint typeID { get; set; }
@@ -1011,47 +1010,10 @@ namespace UnityPlugin
 			typeID = (uint)UnityClassID.Transform;
 		}
 
-		public static Dictionary<uint, uint> transDict;
-		public static StreamWriter rebindFails;
-		public static HashSet<uint> wroteFail = new HashSet<uint>();
-		public static int nrebound;
-		public static int nkept;
 		public void WriteTo(Stream stream, uint version)
 		{
 			BinaryWriter writer = new BinaryWriter(stream);
-			if (transDict == null)
-			{
-				transDict = new Dictionary<uint, uint>();
-				if (!File.Exists("rebinds.txt")) {
-					goto skip;
-				}
-				rebindFails = new StreamWriter("rebindfails.txt");
-				foreach (var line in Encoding.ASCII.GetString(File.ReadAllBytes("rebinds.txt")).Replace("\r", "").Split('\n'))
-				{
-					var pair = line.Split(' ');
-					if (pair.Length != 2)
-						continue;
-					var from = uint.Parse(pair[0]);
-					var to = uint.Parse(pair[1]);
-					transDict[from] = to;
-				}
-			}
-			skip:
-			if (transDict.TryGetValue(path, out uint newpath))
-			{
-				writer.Write(newpath);
-				nrebound++;
-			}
-			else
-			{
-				if (rebindFails != null && !wroteFail.Contains(path))
-				{
-					wroteFail.Add(path);
-					rebindFails.WriteLine(path.ToString());
-				}
-				nkept++;
-				writer.Write(path);
-			}
+			writer.Write(path);
 			writer.Write(attribute);
 			script.WriteTo(stream, version);
 			if (version < AssetCabinet.VERSION_5_6_2)
@@ -1104,7 +1066,7 @@ namespace UnityPlugin
 		public void WriteTo(Stream stream, uint version)
 		{
 			BinaryWriter writer = new BinaryWriter(stream);
-			GenericBinding.nkept = GenericBinding.nrebound = 0;
+
 			writer.Write(genericBindings.Count);
 			for (int i = 0; i < genericBindings.Count; i++)
 			{
@@ -1116,7 +1078,6 @@ namespace UnityPlugin
 			{
 				pptrCurveMapping[i].WriteTo(stream, version);
 			}
-			Report.ReportLog($"Rebound {GenericBinding.nrebound}, kept {GenericBinding.nkept}");
 		}
 
 		public GenericBinding FindBinding(int index)

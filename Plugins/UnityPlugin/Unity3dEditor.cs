@@ -339,8 +339,6 @@ namespace UnityPlugin
 							case UnityClassID.Animation:
 							case UnityClassID.EllipsoidParticleEmitter:
 							case UnityClassID.CharacterJoint:
-							case UnityClassID.GUILayer:
-							case UnityClassID.Light:
 							case UnityClassID.ParticleAnimator:
 								comp.Name = GetNameFromGameObject(filter, stream);
 								break;
@@ -369,16 +367,21 @@ namespace UnityPlugin
 							case UnityClassID.CapsuleCollider:
 							case UnityClassID.Cloth:
 							case UnityClassID.FlareLayer:
+							case UnityClassID.GUILayer:
+							case UnityClassID.Light:
 							case UnityClassID.LineRenderer:
 							case UnityClassID.LODGroup:
 							case UnityClassID.MeshCollider:
 							case UnityClassID.MeshFilter:
 							case UnityClassID.MeshRenderer:
-							case UnityClassID.RectTransform:
+							case UnityClassID.NavMeshObstacle:
+							case UnityClassID.OcclusionArea:
+							case UnityClassID.OffMeshLink:
 							case UnityClassID.ParticleRenderer:
 							case UnityClassID.ParticleSystem:
 							case UnityClassID.ParticleSystemRenderer:
 							case UnityClassID.Projector:
+							case UnityClassID.RectTransform:
 							case UnityClassID.Rigidbody:
 							case UnityClassID.SkinnedMeshRenderer:
 							case UnityClassID.SphereCollider:
@@ -745,9 +748,7 @@ namespace UnityPlugin
 				{
 					if (asset.classID() == insertionOrder[i])
 					{
-						asset.file.RemoveSubfile(asset);
-						asset.file = fi.Cabinet;
-						fi.Cabinet.ReplaceSubfile(-1, asset, null);
+						MoveAsset(asset, fi);
 					}
 				}
 			}
@@ -755,9 +756,7 @@ namespace UnityPlugin
 			{
 				if (!insertionOrder.Contains(asset.classID()))
 				{
-					asset.file.RemoveSubfile(asset);
-					asset.file = fi.Cabinet;
-					fi.Cabinet.ReplaceSubfile(-1, asset, null);
+					MoveAsset(asset, fi);
 				}
 			}
 
@@ -822,6 +821,33 @@ namespace UnityPlugin
 					}
 					break;
 				}
+			}
+		}
+
+		private void MoveAsset(Component asset, UnityParser.FileInfo fi)
+		{
+			NotLoaded notLoaded = null;
+			for (int i = 0; i < asset.file.RemovedList.Count; i++)
+			{
+				NotLoaded removed = asset.file.RemovedList[i];
+				if (removed.replacement == asset)
+				{
+					Parser.FileInfos[1].Cabinet.RemovedList.RemoveAt(i);
+					notLoaded = removed;
+					break;
+				}
+			}
+			asset.file.RemoveSubfile(asset);
+			asset.file = fi.Cabinet;
+			if (notLoaded != null)
+			{
+				int index = fi.Cabinet.Components.Count;
+				fi.Cabinet.Components.Add(notLoaded);
+				fi.Cabinet.ReplaceSubfile(index, asset, notLoaded);
+			}
+			else
+			{
+				fi.Cabinet.ReplaceSubfile(-1, asset, null);
 			}
 		}
 
@@ -1175,6 +1201,22 @@ namespace UnityPlugin
 			Parser.Cabinet.ReplaceSubfile(mb, nml);
 			nml.Parser = mb.Parser;
 			return nml;
+		}
+
+		[Plugin]
+		public LoadedByTypeDefinition OpenLoadedByTypeDefinition(int componentIndex)
+		{
+			Component subfile = Parser.Cabinet.Components[componentIndex];
+			if (subfile is LoadedByTypeDefinition)
+			{
+				return (LoadedByTypeDefinition)subfile;
+			}
+			if (Parser.ExtendedSignature == null)
+			{
+				Report.ReportLog("Not implemented yet - No AssetBundle file found with TypeDefinition for " + subfile.classID() + " as template.");
+				return null;
+			}
+			return Parser.Cabinet.LoadComponent(subfile.pathID);
 		}
 
 		[Plugin]
@@ -1847,27 +1889,7 @@ namespace UnityPlugin
 							}
 						}
 
-						do
-						{
-							HashSet<Tuple<Component, Component>> loopSet = new HashSet<Tuple<Component, Component>>(AssetCabinet.IncompleteClones);
-							AssetCabinet.IncompleteClones.Clear();
-							foreach (var pair in loopSet)
-							{
-								Component src = pair.Item1;
-								Component dest = pair.Item2;
-								Type t = src.GetType();
-								MethodInfo info = t.GetMethod("CopyTo", new Type[] { t });
-								try
-								{
-									info.Invoke(src, new object[] { dest });
-								}
-								catch (Exception e)
-								{
-									Report.ReportLog("CopyTo of " + t + " crashed with " + e.Message);
-								}
-							}
-						}
-						while (AssetCabinet.IncompleteClones.Count > 0);
+						CompleteClones();
 
 						foreach (Component asset in remove)
 						{
@@ -1918,6 +1940,44 @@ namespace UnityPlugin
 				}
 				vAnimsWithMultiEntries.Clear();
 			}
+		}
+
+		public static void CompleteClones()
+		{
+			do
+			{
+				HashSet<Tuple<Component, Component>> loopSet = new HashSet<Tuple<Component, Component>>(AssetCabinet.IncompleteClones);
+				AssetCabinet.IncompleteClones.Clear();
+				foreach (var pair in loopSet)
+				{
+					Component src = pair.Item1;
+					Component dest = pair.Item2;
+					Type t = src.GetType();
+					MethodInfo info = t.GetMethod("CopyTo", new Type[] { t });
+					try
+					{
+						info.Invoke(src, new object[] { dest });
+					}
+					catch (Exception e)
+					{
+						dest.file.RemoveSubfile(dest);
+						if (dest is LinkedByGameObject)
+						{
+							PPtr<GameObject> gameObjPtr = ((LinkedByGameObject)dest).m_GameObject;
+							if (gameObjPtr != null)
+							{
+								GameObject gameObj = gameObjPtr.instance;
+								if (gameObj != null)
+								{
+									gameObj.RemoveLinkedComponent(dest);
+								}
+							}
+						}
+						Report.ReportLog("CopyTo of " + t + " crashed with \"" + e.InnerException.Message + "\". Pasted asset has been removed.");
+					}
+				}
+			}
+			while (AssetCabinet.IncompleteClones.Count > 0);
 		}
 
 		[Plugin]
@@ -2058,7 +2118,7 @@ namespace UnityPlugin
 		}
 
 		[Plugin]
-		public bool AcquireTypeDefinition(string clsIdString)
+		public bool AcquireTypeDefinition(string clsIdString, bool matchExactVersionOnly)
 		{
 			UnityClassID clsId = (UnityClassID)Enum.Parse(typeof(UnityClassID), clsIdString, true);
 			foreach (object obj in Gui.Scripting.Variables.Values)
@@ -2066,7 +2126,8 @@ namespace UnityPlugin
 				if (obj is Unity3dEditor)
 				{
 					Unity3dEditor editor = (Unity3dEditor)obj;
-					if (editor.Parser.Cabinet.VersionNumber == Parser.Cabinet.VersionNumber
+					if ((editor.Parser.Cabinet.VersionNumber == Parser.Cabinet.VersionNumber ||
+						!matchExactVersionOnly && (editor.Parser.Cabinet.VersionNumber & 0xFFFF0000) == (Parser.Cabinet.VersionNumber & 0xFFFF0000))
 						&& (editor.Parser.ExtendedSignature != null && Parser.ExtendedSignature != null
 							|| editor.Parser.ExtendedSignature == null && Parser.ExtendedSignature == null))
 					{
@@ -2300,7 +2361,12 @@ namespace UnityPlugin
 			{
 				if (!usedPtrOnly)
 				{
-					writer.WriteLine(indent + c.ClassName + " " + c.Name);
+					string arrLength = string.Empty;
+					if (c.Members.Count == 1 && c.Members[0] is Uarray)
+					{
+						arrLength = " [" + ((Uarray)c.Members[0]).Value.Length + "]";
+					}
+					writer.WriteLine(indent + c.ClassName + " " + c.Name + arrLength);
 				}
 				for (int i = 0; i < c.Members.Count; i++)
 				{

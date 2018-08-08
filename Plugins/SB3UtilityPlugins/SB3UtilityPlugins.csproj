@@ -58,13 +58,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DX11TutCore">
-      <HintPath>..\..\lib\DX11TutCore.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="SB3UtilityFBX">
-      <HintPath>..\..\lib\SB3UtilityFBX.dll</HintPath>
-    </Reference>
     <Reference Include="SlimDX">
       <HintPath>..\..\SB3UtilityExternalLibraries\SlimDX.dll</HintPath>
       <Private>False</Private>
@@ -79,8 +73,10 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
-    <Reference Include="WeifenLuo.WinFormsUI.Docking">
-      <HintPath>..\..\lib\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.5.0.15095, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SB3UtilityExternalLibraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -233,9 +229,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DX11TutCore\DX11TutCore.csproj">
+      <Project>{e81549e0-46a2-4b80-ac0f-2d23a88e2552}</Project>
+      <Name>DX11TutCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SB3Utility\SB3Utility.csproj">
       <Project>{A351DFAB-3235-4CEA-9916-1BAE973B65AE}</Project>
       <Name>SB3Utility</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SB3UtilityFBX\SB3UtilityFBX.vcxproj">
+      <Project>{120B541E-0A9D-4871-9315-679CB97109E2}</Project>
+      <Name>SB3UtilityFBX</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SB3UtilityPP\SB3UtilityPP.csproj">

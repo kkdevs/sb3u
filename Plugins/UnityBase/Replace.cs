@@ -26,6 +26,7 @@ namespace UnityPlugin
 			r.Z *= -1;
 
 			Transform trans = CreateTransform(parser, frame.Name, parent, t, r, s);
+			CopyUnknowns(parent, trans);
 			trans.InitChildren(frame.Count);
 
 			for (int i = 0; i < frame.Count; i++)
@@ -1045,6 +1046,26 @@ namespace UnityPlugin
 				((ImportedSampledAnimation)conv.AnimationList[0]).TrackList.Clear();
 			}
 
+			for (int i = 0; i < newTrackList.Count; i++)
+			{
+				var pair = newTrackList[i];
+				var track = pair.Value;
+				uint attribute;
+				uint path = conv.GetHashFromName(pair.Key, out attribute);
+				if (path == 0)
+				{
+					continue;
+				}
+
+				if (track.Curve != null)
+				{
+					string trackName = conv.GetNameFromHashes(path, attribute);
+					if (trackName != track.Name)
+					{
+						newTrackList[i] = new KeyValuePair<string, ImportedAnimationSampledTrack>(trackName, track);
+					}
+				}
+			}
 			FbxUtility.ReplaceAnimation(replaceMethod, insertPos, newTrackList, (ImportedSampledAnimation)conv.AnimationList[0], animationNodeDic, negateQuaternions, filterTolerance);
 
 			List<AnimationClip> clipList = conv.ConvertAnimations();

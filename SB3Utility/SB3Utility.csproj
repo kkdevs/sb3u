@@ -58,15 +58,16 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DX11TutCore">
-      <HintPath>..\lib\DX11TutCore.dll</HintPath>
-    </Reference>
-    <Reference Include="Jolt">
-      <HintPath>..\lib\Jolt.dll</HintPath>
+    <Reference Include="Jolt, Version=0.4.3627.40535, Culture=neutral, PublicKeyToken=f6adcb4232d754f0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SB3UtilityExternalLibraries\Jolt.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="SlimDX">
-      <HintPath>..\lib\SlimDX.dll</HintPath>
+    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SB3UtilityExternalLibraries\SlimDX.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -79,7 +80,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.5.0.15095, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+      <HintPath>..\SB3UtilityExternalLibraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -137,6 +138,12 @@
     <None Include="ChangeLog.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DX11TutCore\DX11TutCore.csproj">
+      <Project>{e81549e0-46a2-4b80-ac0f-2d23a88e2552}</Project>
+      <Name>DX11TutCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

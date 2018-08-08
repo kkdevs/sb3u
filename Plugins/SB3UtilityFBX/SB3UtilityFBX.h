@@ -31,6 +31,9 @@ namespace SB3Utility {
 
 	public ref class Fbx
 	{
+	protected:
+		static const FbxString* ApplicationName = new FbxString("SB3UtilityGS");
+
 	public:
 		static String^ GetFbxVersion(void);
 		static String^ GetFbxVersion(bool full);
@@ -50,7 +53,7 @@ namespace SB3Utility {
 			virtual property List<ImportedAnimation^>^ AnimationList;
 			virtual property List<ImportedMorph^>^ MorphList;
 
-			Importer(String^ path, bool negateQuaternionFlips, bool forceTypeSampled);
+			Importer(String^ path, bool averageNormals, bool negateQuaternionFlips, bool forceTypeSampled);
 
 		private:
 			FbxArray<FbxSurfacePhong*>* pMaterials;
@@ -64,6 +67,7 @@ namespace SB3Utility {
 
 			bool negateQuaternionFlips;
 			bool forceTypeSampled;
+			bool averageNormals;
 			bool generatingTangentsReported;
 
 			void ImportNode(ImportedFrame^ parent, FbxNode* pNode);
@@ -99,6 +103,7 @@ namespace SB3Utility {
 				array<double>^ color;
 
 				bool Equals(Vertex^ vertex);
+				bool EqualsUV(Vertex^ vertex);
 
 				Vertex(int numUvSets);
 			};

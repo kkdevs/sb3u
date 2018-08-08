@@ -87,6 +87,8 @@ namespace SB3Utility
 				eulerFilterToolStripMenuItem.CheckedChanged += eulerFilterToolStripMenuItem_CheckChanged;
 				toolStripEditTextBoxFilterPrecision.Text = ((Single)Gui.Config["FbxExportAnimationFilterPrecision"]).ToString();
 				toolStripEditTextBoxFilterPrecision.AfterEditTextChanged += toolStripEditTextBoxFilterPrecision_AfterEditTextChanged;
+				averageNormalsToolStripMenuItem.Checked = (bool)Gui.Config["FbxImportAverageNormals"];
+				averageNormalsToolStripMenuItem.CheckedChanged += averageNormalsToolStripMenuItem_CheckedChanged;
 				negateQuaternionFlipsToolStripMenuItem.Checked = (bool)Gui.Config["FbxImportAnimationNegateQuaternionFlips"];
 				negateQuaternionFlipsToolStripMenuItem.CheckedChanged += negateQuaternionFlipsToolStripMenuItem_CheckedChanged;
 				forceTypeSampledToolStripMenuItem.Checked = (bool)Gui.Config["FbxImportAnimationForceTypeSampled"];
@@ -841,6 +843,18 @@ namespace SB3Utility
 			try
 			{
 				Properties.Settings.Default["FbxExportAnimationFilterPrecision"] = Single.Parse(toolStripEditTextBoxFilterPrecision.Text);
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
+			}
+		}
+
+		private void averageNormalsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			try
+			{
+				Properties.Settings.Default["FbxImportAverageNormals"] = averageNormalsToolStripMenuItem.Checked;
 			}
 			catch (Exception ex)
 			{

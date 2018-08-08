@@ -34,6 +34,7 @@
 			this.cabinetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.cabinetNameToolStripEditTextBox = new SB3Utility.ToolStripEditTextBox();
 			this.cabinetAutomaticRenamingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.convertToSceneAssetBundleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.externalReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.saveppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -129,7 +130,6 @@
 			this.filteredHeaderType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.filteredHeaderSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.convertToSceneAssetBundleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.tabControlAssets.SuspendLayout();
 			this.tabPageAnimators.SuspendLayout();
@@ -200,12 +200,21 @@
 			this.cabinetAutomaticRenamingToolStripMenuItem.Text = "&Automatic Renaming";
 			this.cabinetAutomaticRenamingToolStripMenuItem.ToolTipText = "Renames the CABinet inside the file upon saving";
 			// 
+			// convertToSceneAssetBundleToolStripMenuItem
+			// 
+			this.convertToSceneAssetBundleToolStripMenuItem.Name = "convertToSceneAssetBundleToolStripMenuItem";
+			this.convertToSceneAssetBundleToolStripMenuItem.Size = new System.Drawing.Size(310, 22);
+			this.convertToSceneAssetBundleToolStripMenuItem.Text = "Convert to Scene AssetBundle";
+			this.convertToSceneAssetBundleToolStripMenuItem.Click += new System.EventHandler(this.convertToSceneAssetBundleToolStripMenuItem_Click);
+			// 
 			// externalReferencesToolStripMenuItem
 			// 
 			this.externalReferencesToolStripMenuItem.Name = "externalReferencesToolStripMenuItem";
 			this.externalReferencesToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
 			this.externalReferencesToolStripMenuItem.Text = "&External References";
-			this.externalReferencesToolStripMenuItem.ToolTipText = "References can only be added - not removed!";
+			this.externalReferencesToolStripMenuItem.ToolTipText = "Persisted references are listed first and are shown dimmed.\r\nBelow persisted refe" +
+    "rences are CAB-Strings from open files.\r\n\r\nThe latter can only be persisted. Thi" +
+    "s can not be reverted!";
 			// 
 			// toolStripSeparator5
 			// 
@@ -348,6 +357,8 @@
 			this.exportSubfilesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
 			this.exportSubfilesToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
 			this.exportSubfilesToolStripMenuItem.Text = "&Export...";
+			this.exportSubfilesToolStripMenuItem.ToolTipText = "Export single assets: Texture2D, Cubemap, \r\nAudioClip, Shader, MonoBehaviour, Tex" +
+    "tAsset";
 			this.exportSubfilesToolStripMenuItem.Click += new System.EventHandler(this.exportAssetsToolStripMenuItem_Click);
 			// 
 			// replaceFilesToolStripMenuItem
@@ -356,6 +367,8 @@
 			this.replaceFilesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
 			this.replaceFilesToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
 			this.replaceFilesToolStripMenuItem.Text = "&Replace Files...";
+			this.replaceFilesToolStripMenuItem.ToolTipText = "Replace single assets: Texture2D, Cubemap, \r\nAudioClip, Shader, MonoBehaviour, Te" +
+    "xtAsset";
 			this.replaceFilesToolStripMenuItem.Click += new System.EventHandler(this.replaceFilesToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator2
@@ -1039,13 +1052,6 @@
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(369, 242);
 			this.panel1.TabIndex = 146;
-			// 
-			// convertToSceneAssetBundleToolStripMenuItem
-			// 
-			this.convertToSceneAssetBundleToolStripMenuItem.Name = "convertToSceneAssetBundleToolStripMenuItem";
-			this.convertToSceneAssetBundleToolStripMenuItem.Size = new System.Drawing.Size(310, 22);
-			this.convertToSceneAssetBundleToolStripMenuItem.Text = "Convert to Scene AssetBundle";
-			this.convertToSceneAssetBundleToolStripMenuItem.Click += new System.EventHandler(this.convertToSceneAssetBundleToolStripMenuItem_Click);
 			// 
 			// FormUnity3d
 			// 

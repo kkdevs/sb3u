@@ -18,6 +18,7 @@ namespace UnityPlugin
 	public class RenderObjectUnity : IDisposable, IRenderObject
 	{
 		private AnimationFrame rootFrame;
+		private string HierarchyIsolation = null;
 		private static Device device;
 
 		private List<AnimationFrame> meshFrames;
@@ -45,7 +46,7 @@ namespace UnityPlugin
 
 		const int BoneObjSize = 16;
 
-		public RenderObjectUnity(AnimatorEditor editor, HashSet<string> meshNames)
+		public RenderObjectUnity(AnimatorEditor editor, HashSet<string> meshNames, string hierarchyIsolation)
 		{
 			HighlightSubmesh = new HashSet<int>();
 			highlightMaterial = new Core.Material();
@@ -68,6 +69,10 @@ namespace UnityPlugin
 				}
 			}
 
+			if (hierarchyIsolation != null && hierarchyIsolation.Length > 0)
+			{
+				HierarchyIsolation = hierarchyIsolation;
+			}
 			rootFrame = CreateHierarchy(editor, meshNames, device, out meshFrames);
 
 			AnimationController = new AnimationController(numFrames, 30, 30, 1);
@@ -681,10 +686,11 @@ namespace UnityPlugin
 			Quaternion mirroredRotation = frame.m_LocalRotation;
 			mirroredRotation.Y *= -1;
 			mirroredRotation.Z *= -1;
-			Matrix combinedTransform = Matrix.Scaling(frame.m_LocalScale) * Matrix.RotationQuaternion(mirroredRotation) * Matrix.Translation(-frame.m_LocalPosition.X, frame.m_LocalPosition.Y, frame.m_LocalPosition.Z) * combinedParent;
+			Matrix combinedTransform = Matrix.Scaling(frame.m_LocalScale) * Matrix.RotationQuaternion(mirroredRotation) *
+				Matrix.Translation(-frame.m_LocalPosition.X, frame.m_LocalPosition.Y, frame.m_LocalPosition.Z) * combinedParent;
 			try
 			{
-				extractMatrices.Add(frame.GetTransformPath(), new Tuple<Matrix, Matrix>(combinedTransform, Matrix.Invert(combinedTransform)));
+				extractMatrices.Add(FramePath(frame), new Tuple<Matrix, Matrix>(combinedTransform, Matrix.Invert(combinedTransform)));
 			}
 			catch (ArgumentException)
 			{
@@ -706,18 +712,24 @@ namespace UnityPlugin
 			}
 		}
 
+		private string FramePath(Transform frame)
+		{
+			return HierarchyIsolation != null ? HierarchyIsolation + frame.GetTransformPath() : frame.GetTransformPath();
+		}
+
 		private AnimationFrame CreateFrame(Transform frame, AnimatorEditor editor, HashSet<string> extractFrames, HashSet<string> meshNames, Device device, List<AnimationFrame> meshFrames, Dictionary<string, Tuple<Matrix, Matrix>> extractMatrices)
 		{
 			AnimationFrame animationFrame = new AnimationFrame();
-			animationFrame.Name = frame.GetTransformPath();
+			animationFrame.Name = FramePath(frame);
 			Quaternion mirroredRotation = frame.m_LocalRotation;
 			mirroredRotation.Y *= -1;
 			mirroredRotation.Z *= -1;
-			animationFrame.TransformationMatrix = Matrix.Scaling(frame.m_LocalScale) * Matrix.RotationQuaternion(mirroredRotation) * Matrix.Translation(-frame.m_LocalPosition.X, frame.m_LocalPosition.Y, frame.m_LocalPosition.Z);
+			animationFrame.TransformationMatrix = Matrix.Scaling(frame.m_LocalScale) * Matrix.RotationQuaternion(mirroredRotation) *
+				Matrix.Translation(-frame.m_LocalPosition.X, frame.m_LocalPosition.Y, frame.m_LocalPosition.Z);
 			animationFrame.OriginalTransform = animationFrame.TransformationMatrix;
 			animationFrame.CombinedTransform = extractMatrices[animationFrame.Name].Item1;
 
-			if (meshNames.Contains(animationFrame.Name))
+			if (meshNames.Contains(frame.GetTransformPath()))
 			{
 				MeshRenderer meshR = frame.m_GameObject.instance.FindLinkedComponent(UnityClassID.SkinnedMeshRenderer);
 				if (meshR == null)
@@ -755,7 +767,7 @@ namespace UnityPlugin
 									}
 									else if (i < numBones && i < mesh.m_BindPose.Count)
 									{
-										boneNames[i] = bone.GetTransformPath();
+										boneNames[i] = FramePath(bone);
 										Matrix m = Matrix.Transpose(mesh.m_BindPose[i]);
 										Vector3 s, t;
 										Quaternion q;
@@ -767,6 +779,13 @@ namespace UnityPlugin
 									}
 								}
 								extractCopy.CopyTo(boneNames, boneList.Count - invalidBones);
+								if (HierarchyIsolation != null)
+								{
+									for (int i = boneList.Count - invalidBones; i < boneNames.Length; i++)
+									{
+										boneNames[i] = HierarchyIsolation + boneNames[i];
+									}
+								}
 								for (int i = boneList.Count; i < extractFrames.Count; i++)
 								{
 									boneOffsets[i] = extractMatrices[boneNames[i]].Item2;
@@ -1490,7 +1509,7 @@ namespace UnityPlugin
 			foreach (AnimationFrame frame in meshFrames)
 			{
 				Transform meshTransform = sMesh.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
-				if (frame.Name == meshTransform.GetTransformPath())
+				if (frame.Name == FramePath(meshTransform))
 				{
 					Mesh mesh = Operations.GetMesh(sMesh);
 					AnimationMeshContainer animMesh = frame.MeshContainer as AnimationMeshContainer;
@@ -1630,7 +1649,7 @@ namespace UnityPlugin
 			foreach (AnimationFrame frame in meshFrames)
 			{
 				Transform meshTransform = sMesh.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
-				if (frame.Name == meshTransform.GetTransformPath())
+				if (frame.Name == FramePath(meshTransform))
 				{
 					MorphMeshContainer morphMesh = frame.MeshContainer as MorphMeshContainer;
 					float tweenFactor = 0;
@@ -1677,7 +1696,7 @@ namespace UnityPlugin
 			foreach (AnimationFrame frame in meshFrames)
 			{
 				Transform meshTransform = sMesh.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
-				if (frame.Name == meshTransform.GetTransformPath())
+				if (frame.Name == FramePath(meshTransform))
 				{
 					MorphMeshContainer morphMesh = frame.MeshContainer as MorphMeshContainer;
 					for (int meshObjIdx = 0; morphMesh != null; meshObjIdx++)

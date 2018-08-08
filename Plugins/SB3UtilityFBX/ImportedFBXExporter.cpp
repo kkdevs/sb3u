@@ -20,6 +20,7 @@ namespace SB3Utility
 		exporter->ExportMorphs(imported, false, flatInbetween);
 		exporter->ExportAnimations(startKeyframe, endKeyframe, linear, EulerFilter, filterPrecision, flatInbetween);
 		exporter->pExporter->Export(exporter->pScene);
+		delete exporter;
 
 		Directory::SetCurrentDirectory(currentDir);
 	}
@@ -107,6 +108,38 @@ namespace SB3Utility
 		}
 		// setting file version 7.4.0 would be done like this
 		// pExporter->SetFileExportVersion(FBX_2014_00_COMPATIBLE);
+
+		FbxDocumentInfo* info = pScene->GetSceneInfo();
+		FbxProperty appName = info->FindPropertyHierarchical("Original|ApplicationName", FbxGetDataTypeFromEnum(eFbxString));
+		if (appName.IsValid())
+		{
+			appName.Set<FbxString>(*ApplicationName);
+		}
+		appName = info->FindPropertyHierarchical("LastSaved|ApplicationName", FbxGetDataTypeFromEnum(eFbxString));
+		if (appName.IsValid())
+		{
+			appName.Set<FbxString>(*ApplicationName);
+		}
+		FbxProperty appVersion = info->FindPropertyHierarchical("Original|ApplicationVersion", FbxGetDataTypeFromEnum(eFbxString));
+		if (appVersion.IsValid())
+		{
+			WITH_MARSHALLED_STRING
+			(
+				pAppVersion,
+				Gui::Version,
+				appVersion.Set<FbxString>(FbxString(pAppVersion));
+			);
+		}
+		appVersion = info->FindPropertyHierarchical("LastSaved|ApplicationVersion", FbxGetDataTypeFromEnum(eFbxString));
+		if (appVersion.IsValid())
+		{
+			WITH_MARSHALLED_STRING
+			(
+				pAppVersion,
+				Gui::Version,
+				appVersion.Set<FbxString>(FbxString(pAppVersion));
+			);
+		}
 
 		frameNames = nullptr;
 		if (!allFrames)
@@ -531,7 +564,7 @@ namespace SB3Utility
 
 					if (hasBones)
 					{
-						FbxAMatrix lMeshMatrix = pMeshNode->EvaluateGlobalTransform();
+						FbxAMatrix lMeshMatrix = pFrameNode->EvaluateGlobalTransform();
 
 						FbxSkin* pSkin = FbxSkin::Create(pScene, "");
 						for (int j = 0; j < boneList->Count; j++)

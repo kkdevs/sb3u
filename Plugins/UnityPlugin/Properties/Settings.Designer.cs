@@ -96,7 +96,7 @@ namespace UnityPlugin.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("FBX 2015.1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("FBX 2018.1.1")]
         public string AnimationExportFormat {
             get {
                 return ((string)(this["AnimationExportFormat"]));
@@ -150,6 +150,16 @@ namespace UnityPlugin.Properties {
         public bool FbxExportFlatInBetween {
             get {
                 return ((bool)(this["FbxExportFlatInBetween"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{Clip}-{Slot}-{Animator}-")]
+        public string ExportAnimationFilenamePattern {
+            get {
+                return ((string)(this["ExportAnimationFilenamePattern"]));
             }
         }
     }

@@ -165,18 +165,18 @@ namespace UnityPlugin
 		public void CopyTo(LoadedByTypeDefinition dest)
 		{
 			UPPtr.AnimatorRoot = null;
-			PPtr<GameObject> gameObjPtr = m_GameObject;
+			PPtr<GameObject> gameObjPtr = dest.m_GameObject;
 			if (gameObjPtr != null)
 			{
 				GameObject gameObj = (GameObject)gameObjPtr.asset;
 				if (gameObj != null)
 				{
 					Transform trans = gameObj.FindLinkedComponent(typeof(Transform));
-					while (trans != null)
+					while (trans.Parent != null)
 					{
-						UPPtr.AnimatorRoot = trans;
 						trans = trans.Parent;
 					}
+					UPPtr.AnimatorRoot = trans;
 				}
 				parser.type.CopyToRootClass(dest.parser.type);
 			}

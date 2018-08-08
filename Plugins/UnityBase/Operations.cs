@@ -1642,7 +1642,7 @@ namespace UnityPlugin
 
 			Avatar avatar = null;
 			string animatorOffset;
-			public Dictionary<uint, string> morphChannelInfo;
+			Dictionary<uint, string> morphChannelInfo;
 
 			public UnityConverter(UnityParser parser, List<MeshRenderer> sMeshes, bool skins, ImageFileFormat preferredUncompressedFormat)
 			{
@@ -2198,6 +2198,12 @@ namespace UnityPlugin
 								data = clip.m_MuscleClip.m_Clip.m_ConstantClip.data;
 								dataOffset = numStreamedCurves + (int)clip.m_MuscleClip.m_Clip.m_DenseClip.m_CurveCount;
 							}
+							if (binding == null)
+							{
+								errors.Append("Error! Ran out of bindings in curve=").Append(curveIdx).Append("\n");
+								frameIdx = numFrames;
+								break;
+							}
 
 							if (binding.path == 0)
 							{
@@ -2650,6 +2656,10 @@ namespace UnityPlugin
 						GenericBinding b = clip.m_ClipBindingConstant.genericBindings[i];
 						string trackName = GetNameFromHashes(b.path, b.attribute);
 						var track = sAnim.FindTrack(trackName);
+						if (track == null)
+						{
+							throw new Exception("Track " + trackName + " not found.");
+						}
 
 						switch (b.attribute)
 						{
@@ -2753,7 +2763,7 @@ namespace UnityPlugin
 				return dotPos >= 0 ? avatar.BoneHash(trackName.Substring(0, dotPos)) : 0;
 			}
 
-			private uint GetHashFromName(string trackName, out uint attribute)
+			public uint GetHashFromName(string trackName, out uint attribute)
 			{
 				if (animatorOffset != null && trackName.StartsWith(animatorOffset))
 				{
@@ -2772,7 +2782,36 @@ namespace UnityPlugin
 				int dotPos = trackName.IndexOf('.');
 				if (dotPos >= 0)
 				{
-					attribute = Animator.StringToHash(trackName.Substring(dotPos + 1));
+					string morphClipChannel = trackName.Substring(dotPos + 1);
+					int cutMeshIndex = morphClipChannel.Length;
+					while (cutMeshIndex >= 0 && Char.IsDigit(morphClipChannel[cutMeshIndex - 1]))
+					{
+						cutMeshIndex--;
+					}
+					if (cutMeshIndex >= morphClipChannel.Length || morphClipChannel[cutMeshIndex - 1] != '_')
+					{
+						cutMeshIndex = -1;
+					}
+					else
+					{
+						cutMeshIndex--;
+					}
+					foreach (var pair in morphChannelInfo)
+					{
+						if (morphClipChannel.StartsWith(pair.Value))
+						{
+							if (morphClipChannel.Length == pair.Value.Length ||
+								cutMeshIndex >= 0 && cutMeshIndex == pair.Value.Length)
+							{
+								attribute = pair.Key;
+								break;
+							}
+						}
+					}
+					if (attribute == 0)
+					{
+						attribute = Animator.StringToHash(morphClipChannel);
+					}
 					return avatar.BoneHash(trackName.Substring(0, dotPos));
 				}
 				return 0;

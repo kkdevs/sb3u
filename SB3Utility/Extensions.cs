@@ -138,6 +138,26 @@ namespace SB3Utility
 			}
 		}
 
+		public static List<TreeNode> FindObjectNode(string name, TreeNodeCollection nodes)
+		{
+			List<TreeNode> result = new List<TreeNode>();
+			FindObjectNode(name, nodes, result);
+			return result;
+		}
+
+		private static void FindObjectNode(string name, TreeNodeCollection nodes, List<TreeNode> result)
+		{
+			foreach (TreeNode node in nodes)
+			{
+				if (node.Text.Contains(name))
+				{
+					result.Add(node);
+				}
+
+				FindObjectNode(name, node.Nodes, result);
+			}
+		}
+
 		public static string GenericName(this Type type)
 		{
 			string s = String.Empty;
@@ -167,6 +187,11 @@ namespace SB3Utility
 		public static string ToFloatString(this float value)
 		{
 			return value.ToString("0.##################", Utility.CultureUS);
+		}
+
+		public static string ToDoubleString(this double value)
+		{
+			return value.ToString("0.############################", Utility.CultureUS);
 		}
 
 		public static string ToFloat6String(this float value)

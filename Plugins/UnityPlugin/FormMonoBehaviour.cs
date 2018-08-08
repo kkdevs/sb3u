@@ -150,7 +150,7 @@ namespace UnityPlugin
 			HashSet<int> updates = new HashSet<int>();
 			if (changedLine >= 0)
 			{
-				HashSet<int> changes = GetChanges();
+				HashSet<int> changes = FormLoadedByTypeDefinition.GetChanges(treeViewAdditionalMembers.Nodes);
 				foreach (int change in changes)
 				{
 					int update = change >= changedLine + numNodes ? change + numNodes : change;
@@ -164,11 +164,11 @@ namespace UnityPlugin
 			MonoBehaviour parser = Editor.Parser;
 			for (int i = 4; i < parser.Parser.type.Members.Count; i++)
 			{
-				CreateMember(parser.Parser.type.Members[i], -1, treeViewAdditionalMembers.Nodes);
+				FormLoadedByTypeDefinition.CreateMember(ref line, parser.Parser.type.Members[i], -1, treeViewAdditionalMembers.Nodes);
 			}
 			if (updates.Count > 0)
 			{
-				UpdateNodes(treeViewAdditionalMembers.Nodes, updates);
+				FormLoadedByTypeDefinition.UpdateNodes(treeViewAdditionalMembers.Nodes, updates);
 			}
 			if (line < 15)
 			{
@@ -179,162 +179,11 @@ namespace UnityPlugin
 			ReselectEditedNode();
 		}
 
-		private void CreateMember(UType utype, int arrayIndex, TreeNodeCollection nodes)
-		{
-			if (utype is UClass)
-			{
-				if (((UClass)utype).ClassName == "string")
-				{
-					CreateTreeNode(nodes, utype.Name, " (string)", ((UClass)utype).GetString(), arrayIndex);
-				}
-				else if (((UClass)utype).ClassName == "Vector2f")
-				{
-					string value = ((Ufloat)((UClass)utype).Members[0]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[1]).Value.ToFloatString();
-					CreateTreeNode(nodes, utype.Name, " (Vector2f)", value, arrayIndex);
-				}
-				else if (((UClass)utype).ClassName == "Vector3f")
-				{
-					string value = ((Ufloat)((UClass)utype).Members[0]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[1]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[2]).Value.ToFloatString();
-					CreateTreeNode(nodes, utype.Name, " (Vector3f)", value, arrayIndex);
-				}
-				else if (((UClass)utype).ClassName == "Vector4f")
-				{
-					string value = ((Ufloat)((UClass)utype).Members[0]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[1]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[2]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[3]).Value.ToFloatString();
-					CreateTreeNode(nodes, utype.Name, " (Vector4f)", value, arrayIndex);
-				}
-				else if (((UClass)utype).ClassName == "Quaternionf")
-				{
-					string value = ((Ufloat)((UClass)utype).Members[0]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[1]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[2]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[3]).Value.ToFloatString();
-					CreateTreeNode(nodes, utype.Name, " (Quaternionf)", value, arrayIndex);
-				}
-				else if (((UClass)utype).ClassName == "ColorRGBA" && ((UClass)utype).Members.Count == 4)
-				{
-					string value = ((Ufloat)((UClass)utype).Members[0]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[1]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[2]).Value.ToFloatString()
-						+ ", " + ((Ufloat)((UClass)utype).Members[3]).Value.ToFloatString();
-					CreateTreeNode(nodes, utype.Name, " (ColorRGBA)", value, arrayIndex);
-				}
-				else
-				{
-					TreeNode classNode = CreateTreeNode(nodes, utype.Name, " " + ((UClass)utype).ClassName, null, arrayIndex, false);
-					line++;
-					for (int i = 0; i < ((UClass)utype).Members.Count; i++)
-					{
-						CreateMember(((UClass)utype).Members[i], -1, classNode.Nodes);
-					}
-					line--;
-				}
-			}
-			else if (utype is UPPtr)
-			{
-				UPPtr ptr = (UPPtr)utype;
-				Component asset = ptr.Value != null ? ptr.Value.asset : null;
-				CreateTreeNode(nodes, utype.Name, " (PPtr<" + (asset != null ? asset.classID().ToString() : "") + ">)",
-					ptr.Value != null ? (asset != null ? asset is NotLoaded ? ((NotLoaded)asset).Name : AssetCabinet.ToString(asset) : String.Empty) + " PathID=" + ptr.Value.m_PathID : null, arrayIndex);
-			}
-			else if (utype is Uarray)
-			{
-				TreeNode arrayNode = CreateTreeNode(nodes, "", "Array size " + (((Uarray)utype).Value != null ? ((Uarray)utype).Value.Length : 0), null, arrayIndex, false);
-				arrayNode.Tag = utype;
-				line++;
-
-				if (((Uarray)utype).Value != null)
-				{
-					for (int i = 0; i < ((Uarray)utype).Value.Length; i++)
-					{
-						CreateMember(((Uarray)utype).Value[i], i, arrayNode.Nodes);
-					}
-				}
-				line--;
-			}
-			else if (utype is Ufloat)
-			{
-				CreateTreeNode(nodes, utype.Name, " (float)", ((Ufloat)utype).Value.ToFloatString(), arrayIndex);
-			}
-			else if (utype is Uint8)
-			{
-				CreateTreeNode(nodes, utype.Name, " (int8)", ((Uint8)utype).Value.ToString(), arrayIndex);
-			}
-			else if (utype is Uuint16)
-			{
-				CreateTreeNode(nodes, utype.Name, " (uint16)", ((Uuint16)utype).Value.ToString(), arrayIndex);
-			}
-			else if (utype is Uint32)
-			{
-				CreateTreeNode(nodes, utype.Name, " (int32)", ((Uint32)utype).Value.ToString(), arrayIndex);
-			}
-			else if (utype is Uuint32)
-			{
-				CreateTreeNode(nodes, utype.Name, " (uint32)", ((Uuint32)utype).Value.ToString(), arrayIndex);
-			}
-			else
-			{
-				CreateTreeNode(nodes, utype.Name, " " + utype.GetType() + " unhandled", null, arrayIndex, false);
-			}
-			line++;
-		}
-
-		private TreeNode CreateTreeNode(TreeNodeCollection nodes, string name, string typeName, string value, int arrayIndex, bool enabled = true)
-		{
-			string nodeTag = (arrayIndex >= 0 ? "[" + arrayIndex + "] " : String.Empty) + name + typeName;
-			TreeNode node = new TreeNode(nodeTag + (value != null ? ": " + value : (enabled ? " not initialized" : String.Empty)));
-			node.Name = line.ToString();
-			node.Tag = nodeTag;
-			node.ToolTipText = "line: " + line;
-			nodes.Add(node);
-			node.Checked = enabled;
-			return node;
-		}
-
-		HashSet<int> GetChanges()
-		{
-			HashSet<int> changes = new HashSet<int>();
-			CollectChanges(treeViewAdditionalMembers.Nodes, changes);
-			return changes;
-		}
-
-		void CollectChanges(TreeNodeCollection nodes, HashSet<int> changes)
-		{
-			foreach (TreeNode node in nodes)
-			{
-				if (node.BackColor == Color.SeaGreen)
-				{
-					changes.Add(int.Parse(node.Name));
-				}
-
-				CollectChanges(node.Nodes, changes);
-			}
-		}
-
-		void UpdateNodes(TreeNodeCollection nodes, HashSet<int> updates)
-		{
-			foreach (TreeNode node in nodes)
-			{
-				int line = int.Parse(node.Name);
-				if (updates.Contains(line))
-				{
-					node.BackColor = Color.SeaGreen;
-				}
-
-				UpdateNodes(node.Nodes, updates);
-			}
-		}
-
 		private void editTextBoxMonoBehaviourName_AfterEditTextChanged(object sender, EventArgs e)
 		{
 			try
 			{
-				Gui.Scripting.RunScript(EditorVar + ".SetMonoBehaviourAttributes(name=\"" + editTextBoxMonoBehaviourName.Text + "\")");
+				Gui.Scripting.RunScript(EditorVar + ".SetAttributes(name=\"" + editTextBoxMonoBehaviourName.Text + "\")");
 				Changed = Changed;
 			}
 			catch (Exception ex)
@@ -400,7 +249,7 @@ namespace UnityPlugin
 				if (e.Node.Tag is string && ((string)e.Node.Tag).Contains("PPtr<"))
 				{
 					toolTip1.SetToolTip(labelValueName, "Enter the PathID of the new asset!");
-					toolTip1.SetToolTip(editTextBoxValue, "Enter the PathID of the new asset!");
+					toolTip1.SetToolTip(editTextBoxValue, toolTip1.GetToolTip(labelValueName));
 				}
 				else
 				{
@@ -440,7 +289,7 @@ namespace UnityPlugin
 				}
 
 				int line = int.Parse(treeViewAdditionalMembers.SelectedNode.Name);
-				Gui.Scripting.RunScript(EditorVar + ".SetMonoBehaviourExtendedAttributes(line=" + line + ", value=\"" + editTextBoxValue.Text + "\")");
+				Gui.Scripting.RunScript(EditorVar + ".SetExtendedAttributes(line=" + line + ", value=\"" + editTextBoxValue.Text + "\")");
 				Changed = Changed;
 
 				AddChange(new Tuple<int, string, int>(line, editTextBoxValue.Text, 0));
@@ -497,7 +346,7 @@ namespace UnityPlugin
 				}
 
 				int line = int.Parse(treeViewAdditionalMembers.SelectedNode.Name);
-				if ((bool)Gui.Scripting.RunScript(EditorVar + ".MonoBehaviourArrayInsertBelow(line=" + line + ")"))
+				if ((bool)Gui.Scripting.RunScript(EditorVar + ".ArrayInsertBelow(line=" + line + ")"))
 				{
 					Changed = Changed;
 
@@ -505,15 +354,15 @@ namespace UnityPlugin
 					if (treeViewAdditionalMembers.SelectedNode.Tag is Uarray)
 					{
 						Uarray arr = (Uarray)treeViewAdditionalMembers.SelectedNode.Tag;
-						linesToInsert = CountMembers(arr.Members) - 1;
+						linesToInsert = FormLoadedByTypeDefinition.CountMembers(arr.Members) - 1;
 					}
 					else
 					{
-						linesToInsert = CountNodes(treeViewAdditionalMembers.SelectedNode);
+						linesToInsert = FormLoadedByTypeDefinition.CountNodes(treeViewAdditionalMembers.SelectedNode);
 					}
 					AddChange(new Tuple<int, string, int>(-1, treeViewAdditionalMembers.SelectedNode.Name, linesToInsert));
 					LoadAdditionalMembers(line, linesToInsert);
-					EnsureVisibleEditedNodes(treeViewAdditionalMembers.Nodes[0]);
+					FormLoadedByTypeDefinition.EnsureVisibleEditedNodes(treeViewAdditionalMembers.Nodes[0]);
 					if (treeViewAdditionalMembers.SelectedNode == null)
 					{
 						TreeNode[] nodes = treeViewAdditionalMembers.Nodes.Find(line.ToString(), true);
@@ -531,78 +380,6 @@ namespace UnityPlugin
 			}
 		}
 
-		int CountNodes(TreeNode node)
-		{
-			int numNodes = 1;
-			foreach (TreeNode child in node.Nodes)
-			{
-				numNodes += CountNodes(child);
-			}
-			return numNodes;
-		}
-
-		int CountMembers(List<UType> members)
-		{
-			int numMembers = 0;
-			foreach (UType utype in members)
-			{
-				if (utype is UClass)
-				{
-					switch (((UClass)utype).ClassName)
-					{
-					case "string":
-					case "Vector2f":
-					case "Vector3f":
-					case "Vector4f":
-					case "Quaternionf":
-						numMembers++;
-						break;
-					default:
-						if (((UClass)utype).ClassName == "ColorRGBA" && ((UClass)utype).Members.Count == 4)
-						{
-							numMembers++;
-							break;
-						}
-						numMembers += 1 + CountMembers(((UClass)utype).Members);
-						break;
-					}
-				}
-				else if (utype is UPPtr)
-				{
-					numMembers++;
-				}
-				else if (utype is Uarray)
-				{
-					numMembers += 1 - 1 + CountMembers(((Uarray)utype).Members);
-				}
-				else if (utype is Ufloat)
-				{
-					numMembers++;
-				}
-				else if (utype is Uint8)
-				{
-					numMembers++;
-				}
-				else if (utype is Uuint16)
-				{
-					numMembers++;
-				}
-				else if (utype is Uint32)
-				{
-					numMembers++;
-				}
-				else if (utype is Uuint32)
-				{
-					numMembers++;
-				}
-				else
-				{
-					numMembers++;
-				}
-			}
-			return numMembers;
-		}
-
 		private void buttonArrayElementDelete_Click(object sender, EventArgs e)
 		{
 			try
@@ -613,7 +390,7 @@ namespace UnityPlugin
 				}
 
 				int line = int.Parse(treeViewAdditionalMembers.SelectedNode.Name);
-				if ((bool)Gui.Scripting.RunScript(EditorVar + ".MonoBehaviourArrayDelete(line=" + line + ")"))
+				if ((bool)Gui.Scripting.RunScript(EditorVar + ".ArrayDelete(line=" + line + ")"))
 				{
 					Changed = Changed;
 
@@ -621,15 +398,15 @@ namespace UnityPlugin
 					if (treeViewAdditionalMembers.SelectedNode.Tag is Uarray)
 					{
 						Uarray arr = (Uarray)treeViewAdditionalMembers.SelectedNode.Tag;
-						linesToDelete = CountMembers(arr.Members) - 1;
+						linesToDelete = FormLoadedByTypeDefinition.CountMembers(arr.Members) - 1;
 					}
 					else
 					{
-						linesToDelete = CountNodes(treeViewAdditionalMembers.SelectedNode);
+						linesToDelete = FormLoadedByTypeDefinition.CountNodes(treeViewAdditionalMembers.SelectedNode);
 					}
 					AddChange(new Tuple<int, string, int>(-2, treeViewAdditionalMembers.SelectedNode.Name, linesToDelete));
 					LoadAdditionalMembers(line + linesToDelete, -linesToDelete);
-					EnsureVisibleEditedNodes(treeViewAdditionalMembers.Nodes[0]);
+					FormLoadedByTypeDefinition.EnsureVisibleEditedNodes(treeViewAdditionalMembers.Nodes[0]);
 					if (treeViewAdditionalMembers.SelectedNode == null)
 					{
 						TreeNode[] nodes = treeViewAdditionalMembers.Nodes.Find(line.ToString(), true);
@@ -657,7 +434,7 @@ namespace UnityPlugin
 				}
 
 				int line = int.Parse(treeViewAdditionalMembers.SelectedNode.Name);
-				if ((bool)Gui.Scripting.RunScript(EditorVar + ".MonoBehaviourArrayCopy(line=" + line + ")"))
+				if ((bool)Gui.Scripting.RunScript(EditorVar + ".ArrayCopy(line=" + line + ")"))
 				{
 					Changed = Changed;
 
@@ -680,7 +457,7 @@ namespace UnityPlugin
 				}
 
 				int line = int.Parse(treeViewAdditionalMembers.SelectedNode.Name);
-				if ((bool)Gui.Scripting.RunScript(EditorVar + ".MonoBehaviourArrayPasteBelow(line=" + line + ")"))
+				if ((bool)Gui.Scripting.RunScript(EditorVar + ".ArrayPasteBelow(line=" + line + ")"))
 				{
 					Changed = Changed;
 
@@ -688,15 +465,15 @@ namespace UnityPlugin
 					if (treeViewAdditionalMembers.SelectedNode.Tag is Uarray)
 					{
 						Uarray arr = (Uarray)treeViewAdditionalMembers.SelectedNode.Tag;
-						linesToInsert = CountMembers(arr.Members) - 1;
+						linesToInsert = FormLoadedByTypeDefinition.CountMembers(arr.Members) - 1;
 					}
 					else
 					{
-						linesToInsert = CountNodes(treeViewAdditionalMembers.SelectedNode);
+						linesToInsert = FormLoadedByTypeDefinition.CountNodes(treeViewAdditionalMembers.SelectedNode);
 					}
 					AddChange(new Tuple<int, string, int>(-4, treeViewAdditionalMembers.SelectedNode.Name, linesToInsert));
 					LoadAdditionalMembers(line, linesToInsert);
-					EnsureVisibleEditedNodes(treeViewAdditionalMembers.Nodes[0]);
+					FormLoadedByTypeDefinition.EnsureVisibleEditedNodes(treeViewAdditionalMembers.Nodes[0]);
 					if (treeViewAdditionalMembers.SelectedNode == null)
 					{
 						TreeNode[] nodes = treeViewAdditionalMembers.Nodes.Find(line.ToString(), true);
@@ -711,18 +488,6 @@ namespace UnityPlugin
 			catch (Exception ex)
 			{
 				Utility.ReportException(ex);
-			}
-		}
-
-		private void EnsureVisibleEditedNodes(TreeNode node)
-		{
-			foreach (TreeNode n in node.Nodes)
-			{
-				EnsureVisibleEditedNodes(n);
-			}
-			if (node.BackColor == Color.SeaGreen)
-			{
-				node.EnsureVisible();
 			}
 		}
 
@@ -759,7 +524,7 @@ namespace UnityPlugin
 					}
 
 					LoadContents();
-					MarkEditedLines();
+					FormLoadedByTypeDefinition.MarkEditedLines(editedLines, treeViewAdditionalMembers.Nodes);
 					ReselectLastEditedNode();
 				}
 			}
@@ -778,7 +543,7 @@ namespace UnityPlugin
 					RepeatChange(Changes[changeIndex++]);
 
 					LoadContents();
-					MarkEditedLines();
+					FormLoadedByTypeDefinition.MarkEditedLines(editedLines, treeViewAdditionalMembers.Nodes);
 					ReselectLastEditedNode();
 				}
 			}
@@ -792,31 +557,31 @@ namespace UnityPlugin
 		{
 			if (change.Item1 >= 0)
 			{
-				Editor.SetMonoBehaviourExtendedAttributes(change.Item1, change.Item2);
+				Editor.SetExtendedAttributes(change.Item1, change.Item2);
 
 				editedLines[change.Item1] = true;
 			}
 			else if (change.Item1 == -1)
 			{
 				int changedLine = int.Parse(change.Item2);
-				Editor.MonoBehaviourArrayInsertBelow(changedLine);
+				Editor.ArrayInsertBelow(changedLine);
 				RepeatStructualChanges(changedLine, change.Item3);
 			}
 			else if (change.Item1 == -2)
 			{
 				int line = int.Parse(change.Item2);
-				Editor.MonoBehaviourArrayDelete(int.Parse(change.Item2));
+				Editor.ArrayDelete(int.Parse(change.Item2));
 				int linesToDelete = change.Item3;
 				RepeatStructualChanges(line + linesToDelete, -linesToDelete);
 			}
 			else if (change.Item1 == -3)
 			{
-				Editor.MonoBehaviourArrayCopy(int.Parse(change.Item2));
+				Editor.ArrayCopy(int.Parse(change.Item2));
 			}
 			else if (change.Item1 == -4)
 			{
 				int line = int.Parse(change.Item2);
-				Editor.MonoBehaviourArrayPasteBelow(line);
+				Editor.ArrayPasteBelow(line);
 				int linesToInsert = change.Item3;
 				RepeatStructualChanges(line, linesToInsert);
 			}
@@ -879,23 +644,6 @@ namespace UnityPlugin
 			changeIndex = Changes.Count;
 		}
 
-		private void MarkEditedLines()
-		{
-			for (int i = 0; i < editedLines.Length; i++)
-			{
-				if (editedLines[i])
-				{
-					string lineNumber = i.ToString();
-					TreeNode[] nodes = treeViewAdditionalMembers.Nodes.Find(lineNumber, true);
-					if (nodes.Length == 1)
-					{
-						nodes[0].BackColor = Color.SeaGreen;
-						nodes[0].EnsureVisible();
-					}
-				}
-			}
-		}
-
 		private void treeViewAdditionalMembers_MouseClick(object sender, MouseEventArgs e)
 		{
 			Point moved = e.Location;
@@ -939,6 +687,71 @@ namespace UnityPlugin
 			e.DrawBorder();
 			e.DrawText(TextFormatFlags.Default);
 			Report.ReportStatus(e.ToolTipText);
+		}
+
+		private void treeViewAdditionalMembers_DragDrop(object sender, DragEventArgs e)
+		{
+			try
+			{
+				TreeNode node = (TreeNode)e.Data.GetData(typeof(TreeNode));
+				if (node == null)
+				{
+					Gui.Docking.DockDragDrop(sender, e);
+				}
+				else
+				{
+					FormLoadedByTypeDefinition.ProcessDragDropSources(node, treeViewAdditionalMembers, editTextBoxValue, Editor.Parser.file);
+				}
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
+			}
+		}
+
+		private void treeViewAdditionalMembers_DragEnter(object sender, DragEventArgs e)
+		{
+			try
+			{
+				UpdateDragDrop(sender, e);
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
+			}
+		}
+
+		private void treeViewAdditionalMembers_DragOver(object sender, DragEventArgs e)
+		{
+			try
+			{
+				UpdateDragDrop(sender, e);
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
+			}
+		}
+
+		private void UpdateDragDrop(object sender, DragEventArgs e)
+		{
+			Point p = treeViewAdditionalMembers.PointToClient(new Point(e.X, e.Y));
+			TreeNode target = treeViewAdditionalMembers.GetNodeAt(p);
+			if ((target != null) && ((p.X < target.Bounds.Left) || (p.X > target.Bounds.Right) || (p.Y < target.Bounds.Top) || (p.Y > target.Bounds.Bottom)))
+			{
+				target = null;
+			}
+			treeViewAdditionalMembers.SelectedNode = target;
+
+			TreeNode node = (TreeNode)e.Data.GetData(typeof(TreeNode));
+			if (node == null)
+			{
+				Gui.Docking.DockDragEnter(sender, e);
+			}
+			else
+			{
+				e.Effect = e.AllowedEffect & DragDropEffects.Copy;
+			}
 		}
 	}
 }

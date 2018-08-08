@@ -31,6 +31,7 @@
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.textBoxVersionWarning = new SB3Utility.EditTextBox();
+			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// buttonOK
@@ -69,11 +70,22 @@
 			this.textBoxVersionWarning.Size = new System.Drawing.Size(425, 122);
 			this.textBoxVersionWarning.TabIndex = 10;
 			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(94, 147);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(196, 26);
+			this.label1.TabIndex = 106;
+			this.label1.Text = "OK allows to import type defintions of a \r\nforeign version. This can corrupt the " +
+    "file!";
+			// 
 			// FormVersionWarning
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(450, 185);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textBoxVersionWarning);
 			this.Controls.Add(this.buttonCancel);
 			this.Controls.Add(this.buttonOK);
@@ -95,5 +107,6 @@
 		private System.Windows.Forms.Button buttonOK;
 		private System.Windows.Forms.Button buttonCancel;
 		private SB3Utility.EditTextBox textBoxVersionWarning;
+		private System.Windows.Forms.Label label1;
 	}
 }

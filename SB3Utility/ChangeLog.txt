@@ -1,4 +1,72 @@
-﻿[1.12.2]
+﻿[1.12.12]
+  - Fixed non-critical index error when a Material had been selected before deleting or replacing meshes
+  - Fixed crash when closing Workspace with duplicated (by drag 'n drop) imported contents
+  - Added "Search For" in Workspace
+
+[1.12.11]
+  - Added unsharp search for morph animation tracks to compensate frame indices of in-between blendshapes
+  - Added patterns for filenames of animation exports with name of AnimationClip, slot and Animator
+  - Fixed sorting order of animation clips after replacement, added unsorted state
+  - Fixed editing TextAssets and textual MonoBehaviours didn't change the file's status
+  - Fixed initial animation export format being empty
+
+[1.12.10]
+  - Changed in FormStringTable "Join / Separate" commits changes, fixed status when closing editor
+
+[1.12.9]
+  - Recompiled PPD_Preview_Clothes plugin
+
+[1.12.9]
+  - Added Nml MonoBehaviour copying of normals sets into mesh or reverse
+  - Added animation separation through Isolator in Animator editor
+  - Added animation separation when exporting with the "One Clip per File" option
+  - Fixed full crash some time after Fbx export because of FbxSdk being not thread-safe
+  - Added auto commit of changes in TextAsset / textual MB editors when saving the file or closing the editor
+
+[1.12.8]
+  - Added drag 'n drop of assets between Animators and
+    into MonoBehaviours and LoadedByTypeDefinition onto PPtr<> nodes
+  - Issue: renaming a Transform with a sibling having the same name removes entry in Avatar
+
+[1.12.7]
+  - Added application signature in FBX export and writing the signature on import
+  - Fixed a crash in FBX import when a mesh had no UVs
+  - Fixed "Update Bones" and "Update Bones & Frame" not considering mesh transformation
+  - Fixed "Neither m_Name nor m_GameObject member XXX Mesh UnityPlugin.NotLoaded" when
+    pasting Meshes into files with a Mesh not loaded before (introduced in v1.12.1)
+  - Fix for unexpected selection in the ObjectTree after replacements
+  - Fix for deleting a Transform with a sibling having the same name removes entry in Avatar
+
+[1.12.6]
+  - Fixed "The process cannot access the file because it is being used by another process." when saving
+
+[1.12.5]
+  - Fixed UVNB MonoBehaviour computation to work on world coordinates
+  - Fixed crash in loading compressed Unity files with negative compression ratio
+  - Changed compressed Unity files are shown with an equivalent sign at the beginning
+  - Fixed showing old Transform name after renaming in mesh replacement dialog
+  - Fixed non-critical index error after ReplaceMeshRenderer
+  - Fixed silent crash in FBX import of (even empty) animations for meshes in the root
+  - Fixed FBX averaging of normals and added option for import of split normals
+
+[1.12.4]
+  - Fixed Nml MonoBehaviour computation to work on world coordinates
+
+[1.12.3]
+  - Added transfer of assets linked in GameObjects using the Workspace, e.g. MeshCollider
+  - Changed Shift-Delete in ObjectTree deletes every asset, e.g. MeshColliders
+  - Changed MergeFrame to retain all formerly present assets
+  - Changed added/merged ImportedFrames get their GameObject attributes from DestinationParent
+  - Changed AquireTypeDefinition to retrieve types of close Unity versions
+  - Fixed wrong selection of assets after double click in one of the lists of a file
+  - Fixed pasting LoadedByTypeDefinition causing wrong references (logical corruption)
+  - Fixed internal state after ConvertToSceneAssetBundle producing invalid references later
+  - Fixed RemoveBone didn't set the editor to changed state
+  - Fixed crash in "Save .unity3d As..." for AssetBundle files
+  - Fixed crash when loading AssetBundle file with short CAB-String
+  - Added editing of "every" LoadedByTypeDefinition like MBs (not implemented types only)
+
+[1.12.2]
   - Fixed RemoveBone crash when deleting the first bone
   - Fixed crash in ConvertToSceneAssetBundle in Cabinets with several MBs of the same type
   - Known issue: copy and paste of an Animator loses external Meshes
@@ -24,6 +92,7 @@
     3. number of vertices and faces
     4. center and extend
   - Fixed copy and paste of MeshColliders producing additional copies of Meshes
+  - Added attempt to find GameObjects by their Transform's hierarchy path in "Paste All Marked"
 
 [1.12]
   - Fixed SetMaterialShader producing invalid references for external Materials

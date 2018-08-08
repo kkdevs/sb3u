@@ -570,7 +570,7 @@ namespace UnityPlugin
 			NeedsAlignment = align;
 		}
 
-		public Uint16(Uuint16 i)
+		public Uint16(Uint16 i)
 		{
 			Name = i.Name;
 			NeedsAlignment = i.NeedsAlignment;
@@ -925,6 +925,8 @@ namespace UnityPlugin
 			}
 		}
 
+		public delegate void action(Uarray arr, int line);
+
 		public static void InsertBelow(Uarray arr, int pos)
 		{
 			pos++;
@@ -1134,7 +1136,7 @@ namespace UnityPlugin
 			if (t is UPPtr)
 			{
 				UPPtr p = (UPPtr)t;
-				if (p.Value.asset == old)
+				if (p.Value.asset == old || p.Value.asset is NotLoaded && ((NotLoaded)p.Value.asset).replacement == old)
 				{
 					p.Value = new PPtr<Object>(replacement, destFile);
 				}

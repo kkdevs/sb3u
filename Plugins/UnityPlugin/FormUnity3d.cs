@@ -93,7 +93,7 @@ namespace UnityPlugin
 				UnityParser uParser = (UnityParser)Gui.Scripting.RunScript(ParserVar + " = OpenUnity3d(path=\"" + path + "\")");
 				Editor = (Unity3dEditor)Gui.Scripting.RunScript(EditorVar + " = Unity3dEditor(parser=" + ParserVar + ")");
 
-				Text = Path.GetFileName(uParser.FilePath);
+				Text = (uParser.Uncompressed != null ? "≡" : string.Empty) + Path.GetFileName(uParser.FilePath);
 				ToolTipText = uParser.FilePath;
 				ShowHint = DockState.Document;
 
@@ -362,9 +362,9 @@ namespace UnityPlugin
 						Text += "*";
 					}
 				}
-				else if (Text.EndsWith("*"))
+				else
 				{
-					Text = Path.GetFileName(ToolTipText);
+					Text = (Editor.Parser.Uncompressed != null ? "≡" : string.Empty) + Path.GetFileName(ToolTipText);
 				}
 			}
 		}
@@ -472,23 +472,17 @@ namespace UnityPlugin
 				ReinsertTab(i, new TabPage[] { tabPageAnimators, tabPageAnimations, tabPageMaterials, tabPageImages, tabPageSounds, tabPageOthers }[i]);
 			}
 			adjustSubfileListsEnabled(false);
-			int[] selectedAnimators = new int[animatorsList.SelectedIndices.Count];
-			animatorsList.SelectedIndices.CopyTo(selectedAnimators, 0);
+			HashSet<Component> selectedAnimators = GetSelectedComponents(animatorsList);
 			animatorsList.Items.Clear();
-			int[] selectedAnimations = new int[animationsList.SelectedIndices.Count];
-			animationsList.SelectedIndices.CopyTo(selectedAnimations, 0);
+			HashSet<Component> selectedAnimations = GetSelectedComponents(animationsList);
 			animationsList.Items.Clear();
-			int[] selectedMaterials = new int[materialsList.SelectedIndices.Count];
-			materialsList.SelectedIndices.CopyTo(selectedMaterials, 0);
+			HashSet<Component> selectedMaterials = GetSelectedComponents(materialsList);
 			materialsList.Items.Clear();
-			int[] selectedImg = new int[imagesList.SelectedIndices.Count];
-			imagesList.SelectedIndices.CopyTo(selectedImg, 0);
+			HashSet<Component> selectedImg = GetSelectedComponents(imagesList);
 			imagesList.Items.Clear();
-			int[] selectedSounds = new int[soundsList.SelectedIndices.Count];
-			soundsList.SelectedIndices.CopyTo(selectedSounds, 0);
+			HashSet<Component> selectedSounds = GetSelectedComponents(soundsList);
 			soundsList.Items.Clear();
-			int[] selectedOthers = new int[othersList.SelectedIndices.Count];
-			othersList.SelectedIndices.CopyTo(selectedOthers, 0);
+			HashSet<Component> selectedOthers = GetSelectedComponents(othersList);
 			othersList.Items.Clear();
 			if (!filterIncludedAssetsToolStripMenuItem.Checked)
 			{
@@ -537,17 +531,22 @@ namespace UnityPlugin
 						case UnityClassID.CapsuleCollider:
 						case UnityClassID.Cloth:
 						case UnityClassID.FlareLayer:
+						case UnityClassID.GUILayer:
+						case UnityClassID.Light:
 						case UnityClassID.LineRenderer:
 						case UnityClassID.LODGroup:
 						case UnityClassID.Mesh:
 						case UnityClassID.MeshCollider:
 						case UnityClassID.MeshFilter:
 						case UnityClassID.MeshRenderer:
-						case UnityClassID.RectTransform:
+						case UnityClassID.NavMeshObstacle:
+						case UnityClassID.OcclusionArea:
+						case UnityClassID.OffMeshLink:
 						case UnityClassID.ParticleRenderer:
 						case UnityClassID.ParticleSystem:
 						case UnityClassID.ParticleSystemRenderer:
 						case UnityClassID.Projector:
+						case UnityClassID.RectTransform:
 						case UnityClassID.Rigidbody:
 						case UnityClassID.SkinnedMeshRenderer:
 						case UnityClassID.SphereCollider:
@@ -733,17 +732,22 @@ namespace UnityPlugin
 					case UnityClassID.CapsuleCollider:
 					case UnityClassID.Cloth:
 					case UnityClassID.FlareLayer:
+					case UnityClassID.GUILayer:
+					case UnityClassID.Light:
 					case UnityClassID.LineRenderer:
 					case UnityClassID.LODGroup:
 					case UnityClassID.Mesh:
 					case UnityClassID.MeshCollider:
 					case UnityClassID.MeshFilter:
 					case UnityClassID.MeshRenderer:
-					case UnityClassID.RectTransform:
+					case UnityClassID.NavMeshObstacle:
+					case UnityClassID.OcclusionArea:
+					case UnityClassID.OffMeshLink:
 					case UnityClassID.ParticleRenderer:
 					case UnityClassID.ParticleSystem:
 					case UnityClassID.ParticleSystemRenderer:
 					case UnityClassID.Projector:
+					case UnityClassID.RectTransform:
 					case UnityClassID.Rigidbody:
 					case UnityClassID.SkinnedMeshRenderer:
 					case UnityClassID.SphereCollider:
@@ -763,8 +767,6 @@ namespace UnityPlugin
 							subfile.classID() != UnityClassID.CharacterJoint &&
 							subfile.classID() != UnityClassID.Cubemap &&
 							subfile.classID() != UnityClassID.EllipsoidParticleEmitter &&
-							subfile.classID() != UnityClassID.GUILayer &&
-							subfile.classID() != UnityClassID.Light &&
 							subfile.classID() != UnityClassID.LightmapSettings &&
 							(subfile.classID() != UnityClassID.MonoBehaviour || Editor.Parser.Cabinet.Types.Count == 0 || Editor.Parser.Cabinet.VersionNumber >= AssetCabinet.VERSION_5_0_0 && Editor.Parser.Cabinet.Types[0].localStrings == null) &&
 							subfile.classID() != UnityClassID.MonoScript &&
@@ -862,14 +864,31 @@ namespace UnityPlugin
 			}
 		}
 
-		private void ReselectItems(ListView subfiles, int[] selectedSubfiles)
+		private HashSet<Component> GetSelectedComponents(ListView list)
 		{
-			foreach (int i in selectedSubfiles)
+			HashSet<Component> selectedComponents = new HashSet<Component>();
+			foreach (ListViewItem item in list.SelectedItems)
 			{
-				if (i < subfiles.Items.Count)
+				Component asset = item.Tag is NotLoaded && ((NotLoaded)item.Tag).replacement != null
+					? ((NotLoaded)item.Tag).replacement : (Component)item.Tag;
+				selectedComponents.Add(asset);
+			}
+
+			return selectedComponents;
+		}
+
+		private void ReselectItems(ListView subfiles, HashSet<Component> selectedSubfiles)
+		{
+			foreach (Component asset in selectedSubfiles)
+			{
+				foreach (ListViewItem item in subfiles.Items)
 				{
-					subfiles.Items[i].Selected = true;
-					subfiles.Items[i].EnsureVisible();
+					if (item.Tag == asset)
+					{
+						item.Selected = true;
+						item.EnsureVisible();
+						break;
+					}
 				}
 			}
 		}
@@ -1168,6 +1187,36 @@ namespace UnityPlugin
 		}
 
 		[Plugin]
+		public DockContent OpenLoadedByTypeDefinition(int componentIndex)
+		{
+			Component asset = Editor.Parser.Cabinet.Components[componentIndex];
+			string name = (asset is NotLoaded ? ((NotLoaded)asset).Name : AssetCabinet.ToString(asset)) + componentIndex;
+			DockContent child;
+			if (!ChildForms.TryGetValue(name, out child))
+			{
+				string childParserVar;
+				if (!ChildParserVars.TryGetValue(name, out childParserVar))
+				{
+					childParserVar = Gui.Scripting.GetNextVariable("loadedByTypeDefinition");
+					Gui.Scripting.RunScript(childParserVar + " = " + EditorVar + ".OpenLoadedByTypeDefinition(componentIndex=" + componentIndex + ")");
+					if (!Gui.Scripting.Variables.ContainsKey(childParserVar))
+					{
+						return null;
+					}
+					ChildParserVars.Add(name, childParserVar);
+				}
+
+				LoadedByTypeDefinition childParser = (LoadedByTypeDefinition)Gui.Scripting.Variables[childParserVar];
+				child = new FormLoadedByTypeDefinition(Editor.Parser, childParserVar);
+				child.FormClosing += new FormClosingEventHandler(ChildForms_FormClosing);
+				child.Tag = name;
+				ChildForms.Add(name, child);
+			}
+
+			return child;
+		}
+
+		[Plugin]
 		public FormNmlMonoBehaviour OpenNmlMonoBehaviour(int componentIndex)
 		{
 			Component asset = Editor.Parser.Cabinet.Components[componentIndex];
@@ -1375,6 +1424,15 @@ namespace UnityPlugin
 							{
 								Report.ReportLog("Virtual Animator at root " + gameObj.m_Name + " has been created.");
 								format = true;
+							}
+						}
+						else if (item.Tag is LoadedByTypeDefinition)
+						{
+							int componentIdx = Editor.Parser.Cabinet.Components.IndexOf((Component)item.Tag);
+							DockContent formLoadedByTypeDef = (DockContent)Gui.Scripting.RunScript(FormVariable + ".OpenLoadedByTypeDefinition(componentIndex=" + componentIdx + ")", false);
+							if (formLoadedByTypeDef != null)
+							{
+								formLoadedByTypeDef.Activate();
 							}
 						}
 					}
@@ -1767,7 +1825,7 @@ namespace UnityPlugin
 		{
 			try
 			{
-				CloseEditors();
+				CloseAndCommitEditors();
 				AutomaticRenamingCabinet(Editor.Parser.FilePath);
 				string backupExt = Path.GetExtension(Editor.Parser.FilePath);
 				backupExt = backupExt == String.Empty ? "None" : backupExt.Substring(1);
@@ -1854,7 +1912,7 @@ namespace UnityPlugin
 			{
 				if (saveFileDialog1.ShowDialog() == DialogResult.OK)
 				{
-					CloseEditors();
+					CloseAndCommitEditors();
 					AutomaticRenamingCabinet(saveFileDialog1.FileName);
 					string backupExt = Path.GetExtension(Editor.Parser.FilePath);
 					backupExt = backupExt == String.Empty ? "None" : backupExt.Substring(1);
@@ -1875,7 +1933,7 @@ namespace UnityPlugin
 			}
 		}
 
-		void CloseEditors()
+		void CloseAndCommitEditors()
 		{
 			if (RemovedMods.Count > 0)
 			{
@@ -1895,6 +1953,15 @@ namespace UnityPlugin
 					Gui.Scripting.Variables.Remove(parserVar);
 				}
 				ChildParserVars.Clear();
+			}
+
+			foreach (var pair in ChildForms)
+			{
+				FormStringTable strTable = pair.Value as FormStringTable;
+				if (strTable != null && strTable.Changed)
+				{
+					strTable.buttonApply_Click(null, null);
+				}
 			}
 		}
 
@@ -3127,7 +3194,7 @@ namespace UnityPlugin
 							string msg = animController.m_Name +
 								(animController.m_Controller.m_LayerArray.Length > 0 ? " layers= Body0=" + animController.m_Controller.m_LayerArray[0].m_BodyMask.word0.ToString("X8") + ",1=" + animController.m_Controller.m_LayerArray[0].m_BodyMask.word1.ToString("X8") + ", skMasks=" + animController.m_Controller.m_LayerArray.Length + ", skMask[0]Len=" + animController.m_Controller.m_LayerArray[0].m_SkeletonMask.m_Data.Length : "") +
 								(animController.m_Controller.m_StateMachineArray.Length > 0 ? " states=" + animController.m_Controller.m_StateMachineArray.Length +
-								" const=" + animController.m_Controller.m_StateMachineArray[0].m_StateConstantArray.Count +
+								" const=" + animController.m_Controller.m_StateMachineArray[0].m_StateConstantArray.Length +
 								", any=" + animController.m_Controller.m_StateMachineArray[0].m_AnyStateTransitionConstantArray.Length : "") +
 								(animController.m_Controller.m_Values.m_ValueArray.Count > 0 ? " values=" + animController.m_Controller.m_Values.m_ValueArray.Count : "") +
 								(animController.m_Controller.m_DefaultValues.m_BoolValues.Length > 0 ? " defBool=" + animController.m_Controller.m_DefaultValues.m_BoolValues.Length : "") +
@@ -3153,8 +3220,8 @@ namespace UnityPlugin
 								{
 									continue;
 								}
-								msg += "\r\n" + i + ": const=" + sMConst.m_StateConstantArray.Count;
-								for (int j = 0; j < sMConst.m_StateConstantArray.Count; j++)
+								msg += "\r\n" + i + ": const=" + sMConst.m_StateConstantArray.Length;
+								for (int j = 0; j < sMConst.m_StateConstantArray.Length; j++)
 								{
 									StateConstant sConst = sMConst.m_StateConstantArray[j];
 									string clipName = "<clip not found>";

@@ -44,10 +44,6 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DX11TutCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\DX11TutCore.dll</HintPath>
-    </Reference>
     <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\SB3UtilityExternalLibraries\SlimDX.dll</HintPath>
@@ -63,8 +59,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WeifenLuo.WinFormsUI.Docking">
-      <HintPath>..\lib\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.5.0.15095, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SB3UtilityExternalLibraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +179,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DX11TutCore\DX11TutCore.csproj">
+      <Project>{e81549e0-46a2-4b80-ac0f-2d23a88e2552}</Project>
+      <Name>DX11TutCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Plugins\SB3UtilityPlugins\SB3UtilityPlugins.csproj">
       <Project>{76C12FB4-AEBF-4271-9CCA-6F04A25ED266}</Project>
       <Name>SB3UtilityPlugins</Name>
@@ -198,8 +200,20 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>if not exist msvcp100.dll (echo msvcp100.dll missing! &amp;&amp; copy ..\SB3UtilityExternalLibraries\msvc*100.dll)
+if not exist vcruntime140.dll (echo VC++ 2015 and UCRT missing! &amp;&amp; copy ..\SB3UtilityExternalLibraries\api-ms-win-*.dll &amp;&amp; copy ..\SB3UtilityExternalLibraries\vcruntime140.dll  &amp;&amp; copy ..\SB3UtilityExternalLibraries\ucrtbase.dll &amp;&amp; copy ..\SB3UtilityExternalLibraries\msvcp140.dll)
+if not exist fmod.dll (echo fmod.dll missing! &amp;&amp; copy ..\SB3UtilityExternalLibraries\fmod.dll)
+if not exist SlimDX.dll (echo SlimDX.dll missing! &amp;&amp; copy ..\SB3UtilityExternalLibraries\SlimDX.dll)
+if not exist Jolt.dll (echo Jolt.dll missing! &amp;&amp; copy ..\SB3UtilityExternalLibraries\Jolt.dll)
+if not exist Jolt.Testing.GeneratedTypes.dll (echo Jolt.Testing.GeneratedTypes.dll missing! &amp;&amp; copy ..\SB3UtilityExternalLibraries\Jolt.Testing.GeneratedTypes.dll)
+if not exist WeifenLuo.WinFormsUI.Docking.dll (echo WeifenLuo.WinFormsUI.Docking.dll missing! &amp;&amp; copy ..\SB3UtilityExternalLibraries\WeifenLuo.WinFormsUI.Docking.dll)
+if not exist plugins\niflib.dll (echo plugins\niflib.dll missing! &amp;&amp; copy ..\SB3UtilityExternalLibraries\niflib.dll plugins)
+if not exist plugins\libfbxsdk.dll (echo plugins\libfbxsdk.dll missing! &amp;&amp; copy ..\SB3UtilityExternalLibraries\libfbxsdk.dll plugins)
+REM The following DLLs are needed for the dependency check of SB3UtilityFBX. Not needed to be deployed.
+REM if exist plugins\Jolt.dll del plugins\Jolt.dll
+REM if exist plugins\Jolt.Testing.GeneratedTypes.dll del plugins\Jolt.Testing.GeneratedTypes.dll
+REM if exist plugins\WeifenLuo.WinFormsUI.Docking.dll del plugins\WeifenLuo.WinFormsUI.Docking.dll
+REM if exist plugins\SB3Utility.dll del plugins\SB3Utility.dll</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

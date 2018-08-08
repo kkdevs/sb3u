@@ -8,7 +8,7 @@ using namespace System::Globalization;
 
 namespace SB3Utility
 {
-	Fbx::Importer::Importer(String^ path, bool negateQuaternionFlips, bool forceTypeSampled)
+	Fbx::Importer::Importer(String^ path, bool averageNormals, bool negateQuaternionFlips, bool forceTypeSampled)
 	{
 		String^ currentDir;
 
@@ -54,9 +54,51 @@ namespace SB3Utility
 			}
 
 			pImporter->Import(pScene);
+
+			FbxIOFileHeaderInfo* header = pImporter->GetFileHeaderInfo();
+			FbxDocumentInfo* info = pScene->GetSceneInfo();
+			String^ app = String::Empty;
+			FbxProperty appName = info->FindPropertyHierarchical("LastSaved|ApplicationName", FbxGetDataTypeFromEnum(eFbxString));
+			if (appName.IsValid())
+			{
+				app = gcnew String(appName.Get<FbxString>());
+				if (app->Length > 0)
+				{
+					app = " created by \"" + app;
+					FbxProperty appVer = info->FindPropertyHierarchical("LastSaved|ApplicationVersion", FbxGetDataTypeFromEnum(eFbxString));
+					if (appVer.IsValid())
+					{
+						app += " " + gcnew String(appVer.Get<FbxString>());
+					}
+					app += "\"";
+				}
+			}
+			String^ on = String::Empty;
+			if (header->mCreationTimeStampPresent)
+			{
+				FbxDateTime* dt = new FbxDateTime(header->mCreationTimeStamp.mDay, header->mCreationTimeStamp.mMonth, header->mCreationTimeStamp.mYear, header->mCreationTimeStamp.mHour, header->mCreationTimeStamp.mMinute, header->mCreationTimeStamp.mSecond, header->mCreationTimeStamp.mMillisecond);
+				on = " on " + gcnew String(dt->toString());
+				delete dt;
+			}
+			else
+			{
+				FbxProperty created = info->FindPropertyHierarchical("LastSaved|DateTime_GMT", FbxGetDataTypeFromEnum(eFbxDateTime));
+				if (created.IsValid())
+				{
+					FbxDateTime dt = created.Get<FbxDateTime>();
+					on = gcnew String(dt.toString());
+					if (on->Length > 0)
+					{
+						on = " on " + on;
+					}
+				}
+			}
+			Report::ReportLog("\"" + path + "\"" + app + on + " imported.");
+
 			pMaterials = new FbxArray<FbxSurfacePhong*>();
 			pTextures = new FbxArray<FbxTexture*>();
 
+			this->averageNormals = averageNormals;
 			this->generatingTangentsReported = false;
 			FbxNode* pRootNode = pScene->GetRootNode();
 			if (pRootNode != NULL)
@@ -494,41 +536,40 @@ namespace SB3Utility
 
 								List<Vertex^>^ vertMapList = vertMap[controlPointIdx];
 								Vertex^ foundVert = nullptr;
-								Vertex^ sameUV = nullptr;
-								for (int m = 0; m < vertMapList->Count; m++)
+								if (averageNormals)
 								{
-									if (sameUV == nullptr && vertMapList[m]->uv[0] == vert->uv[0] && vertMapList[m]->uv[1] == vert->uv[1])
-									{
-										sameUV = vertMapList[m];
-									}
-									if (vertMapList[m]->Equals(vert))
-									{
-										foundVert = sameUV == nullptr ? vertMapList[m] : sameUV;
-										break;
-									}
-								}
-
-								if (foundVert == nullptr)
-								{
-									bool newUV = true;
 									for each (Vertex^ v in vertMapList)
 									{
-										if (v->uv[0] == vert->uv[0] && v->uv[1] == vert->uv[1])
+										if (v->EqualsUV(vert))
 										{
-											newUV = false;
+											foundVert = v;
+											vertMapList->Add(vert);
 											break;
 										}
 									}
-									if (newUV)
+
+									if (foundVert == nullptr)
 									{
 										vert->index = -1;
 										vertMapList->Insert(0, vert);
 										foundVert = vert;
 									}
-									else
+								}
+								else
+								{
+									for (int m = 0; m < vertMapList->Count; m++)
 									{
-										foundVert = sameUV;
+										if (vertMapList[m]->Equals(vert))
+										{
+											foundVert = vertMapList[m];
+											break;
+										}
+									}
+
+									if (foundVert == nullptr)
+									{
 										vertMapList->Add(vert);
+										foundVert = vert;
 									}
 								}
 								faceMap[j][k] = foundVert;
@@ -537,34 +578,36 @@ namespace SB3Utility
 							}
 						}
 
-						for (int j = 0; j < vertMap->Length; j++)
+						if (averageNormals)
 						{
-							List<Vertex^>^ vertMapList = vertMap[j];
-							int numNormals = vertMapList->Count;
-							if (numNormals > 0)
+							for (int j = 0; j < vertMap->Length; j++)
 							{
-								array<float>^ normal = gcnew array<float>(3);
-								for (int k = 0; k < vertMapList->Count; k++)
+								List<Vertex^>^ vertMapList = vertMap[j];
+								int numNormals = vertMapList->Count;
+								if (numNormals > 0)
 								{
-									Vertex^ v = vertMapList[k];
-									array<float>^ addNormal = v->normal;
-									normal[0] += addNormal[0];
-									normal[1] += addNormal[1];
-									normal[2] += addNormal[2];
-									if (v->index == 0)
+									array<float>^ normal = gcnew array<float>(3);
+									for (int k = 0; k < vertMapList->Count; k++)
 									{
-										vertMapList->RemoveAt(k);
-										k--;
+										Vertex^ v = vertMapList[k];
+										array<float>^ addNormal = v->normal;
+										normal[0] += addNormal[0];
+										normal[1] += addNormal[1];
+										normal[2] += addNormal[2];
+										if (v->index == 0)
+										{
+											vertMapList->RemoveAt(k--);
+										}
 									}
-								}
-								normal[0] /= numNormals;
-								normal[1] /= numNormals;
-								normal[2] /= numNormals;
-								for each (Vertex^ v in vertMapList)
-								{
-									v->normal[0] = normal[0];
-									v->normal[1] = normal[1];
-									v->normal[2] = normal[2];
+									normal[0] /= numNormals;
+									normal[1] /= numNormals;
+									normal[2] /= numNormals;
+									for each (Vertex^ v in vertMapList)
+									{
+										v->normal[0] = normal[0];
+										v->normal[1] = normal[1];
+										v->normal[2] = normal[2];
+									}
 								}
 							}
 						}
@@ -619,10 +662,10 @@ namespace SB3Utility
 								bool boneUsed = false;
 								for (int k = 0; k < numIndices; k++)
 								{
-									List<Vertex^>^ vert = vertMap[lIndices[k]];
-									for (int m = 0; m < vert->Count; m++)
+									if (lWeights[k] > 0)
 									{
-										if (lWeights[k] > 0)
+										List<Vertex^>^ vert = vertMap[lIndices[k]];
+										for (int m = 0; m < vert->Count; m++)
 										{
 											vert[m]->boneIndices->Add(boneIdx);
 											vert[m]->weights->Add((float)lWeights[k]);
@@ -1498,7 +1541,7 @@ namespace SB3Utility
 	{
 		position = gcnew array<float>(3);
 		normal = gcnew array<float>(3);
-		uv = gcnew array<float>(2 * numUvSets);
+		uv = gcnew array<float>(2 * Math::Max(1, numUvSets));
 		boneIndices = gcnew List<Byte>(4);
 		weights = gcnew List<float>(4);
 	}
@@ -1507,9 +1550,19 @@ namespace SB3Utility
 	{
 		bool equals = true;
 
-		equals &= normal[0].Equals(vertex->normal[0]);
-		equals &= normal[1].Equals(vertex->normal[1]);
-		equals &= normal[2].Equals(vertex->normal[2]);
+		equals &= Math::Abs(normal[0] - vertex->normal[0]) < 1e-4;
+		equals &= Math::Abs(normal[1] - vertex->normal[1]) < 1e-4;
+		equals &= Math::Abs(normal[2] - vertex->normal[2]) < 1e-4;
+
+		equals &= uv[0].Equals(vertex->uv[0]);
+		equals &= uv[1].Equals(vertex->uv[1]);
+
+		return equals;
+	}
+
+	bool Fbx::Importer::Vertex::EqualsUV(Vertex^ vertex)
+	{
+		bool equals = true;
 
 		equals &= uv[0].Equals(vertex->uv[0]);
 		equals &= uv[1].Equals(vertex->uv[1]);

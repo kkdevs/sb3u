@@ -420,6 +420,7 @@ namespace UnityPlugin
 		public List<Reference> References { get; protected set; }
 
 		public Stream SourceStream { get; set; }
+		private int nestLevel = 0;
 		public UnityParser Parser { get; set; }
 		public bool loadingReferentials { get; set; }
 		public bool needsLoadingRefs { get; set; }
@@ -1417,11 +1418,21 @@ namespace UnityPlugin
 
 		public void BeginLoadingSkippedComponents()
 		{
+			if (SourceStream != null)
+			{
+				nestLevel++;
+				return;
+			}
 			SourceStream = Parser.Uncompressed == null ? File.OpenRead(Parser.FilePath) : Parser.Uncompressed;
 		}
 
 		public void EndLoadingSkippedComponents()
 		{
+			if (nestLevel > 0)
+			{
+				nestLevel--;
+				return;
+			}
 			if (SourceStream != Parser.Uncompressed)
 			{
 				SourceStream.Close();
@@ -1864,6 +1875,13 @@ namespace UnityPlugin
 						projector.LoadFrom(stream);
 						return projector;
 					}
+/*				case UnityClassID.QualitySettings:
+					{
+						QualitySettings qualitySettings = new QualitySettings(this, comp.pathID, comp.classID1, comp.classID2);
+						ReplaceSubfile(index, qualitySettings, comp);
+						qualitySettings.LoadFrom(stream);
+						return qualitySettings;
+					}*/
 				case UnityClassID.RectTransform:
 					{
 						RectTransform rTrans = new RectTransform(this, comp.pathID, comp.classID1, comp.classID2);
@@ -2214,7 +2232,7 @@ namespace UnityPlugin
 			{
 				return m_Name.GetValue(subfile, null).ToString();
 			}
-			throw new Exception("Neither m_Name nor m_GameObject member " + subfile.pathID + " " + subfile.classID() + (subfile.classID() == UnityClassID.MonoBehaviour ? " " + (int)subfile.classID1 : String.Empty) + " " + subfile.GetType());
+			throw new Exception("Neither m_Name nor m_GameObject member found in " + subfile.classID() + " PathID=" + subfile.pathID + " " + (subfile.classID() == UnityClassID.MonoBehaviour ? "/" + (int)subfile.classID1 : String.Empty) + " " + subfile.GetType());
 		}
 	}
 }

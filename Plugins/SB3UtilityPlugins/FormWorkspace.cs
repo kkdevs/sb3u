@@ -91,9 +91,13 @@ namespace SB3Utility
 			Watcher.Renamed += new RenamedEventHandler(watcher_Changed);
 			Watcher.EnableRaisingEvents = automaticReopenToolStripMenuItem.Checked;
 
+			textBoxWorkspaceSearchFor.AutoCompleteCustomSource.Clear();
+			textBoxWorkspaceSearchFor.AutoCompleteSource = AutoCompleteSource.None;
+
 			if (editor.Frames != null)
 			{
 				TreeNode root = new TreeNode(typeof(ImportedFrame).Name);
+				textBoxWorkspaceSearchFor.AutoCompleteCustomSource.Add(root.Text);
 				root.Checked = true;
 				this.treeView.AddChild(root);
 
@@ -101,6 +105,7 @@ namespace SB3Utility
 				{
 					var frame = importer.FrameList[i];
 					TreeNode node = new TreeNode(frame.Name);
+					textBoxWorkspaceSearchFor.AutoCompleteCustomSource.Add(node.Text);
 					node.Checked = true;
 					node.Tag = new DragSource(editorVar, typeof(ImportedFrame), editor.Frames.IndexOf(frame));
 					this.treeView.AddChild(root, node);
@@ -117,6 +122,8 @@ namespace SB3Utility
 			AddList(importer.TextureList, typeof(ImportedTexture).Name, editorVar);
 			AddList(editor.Morphs, typeof(ImportedMorph).Name, editorVar);
 			AddList(editor.Animations, typeof(ImportedAnimation).Name, editorVar);
+
+			textBoxWorkspaceSearchFor.AutoCompleteSource = AutoCompleteSource.CustomSource;
 
 			foreach (TreeNode root in this.treeView.Nodes)
 			{
@@ -155,6 +162,7 @@ namespace SB3Utility
 			if ((list != null) && (list.Count > 0))
 			{
 				TreeNode root = new TreeNode(rootName);
+				textBoxWorkspaceSearchFor.AutoCompleteCustomSource.Add(root.Text);
 				root.Checked = true;
 				this.treeView.AddChild(root);
 
@@ -168,6 +176,7 @@ namespace SB3Utility
 						: item is WorkspaceMaterial
 							? null
 							: item.Name);
+					textBoxWorkspaceSearchFor.AutoCompleteCustomSource.Add(node.Text);
 					node.Checked = true;
 					node.Tag = new DragSource(editorVar, typeof(T), i);
 					this.treeView.AddChild(root, node);
@@ -201,6 +210,7 @@ namespace SB3Utility
 						{
 							ImportedMorphKeyframe keyframe = morph.KeyframeList[j];
 							TreeNode keyframeNode = new TreeNode();
+							textBoxWorkspaceSearchFor.AutoCompleteCustomSource.Add(keyframe.Name);
 							keyframeNode.Checked = morph.isMorphKeyframeEnabled(keyframe);
 							keyframeNode.Tag = keyframe;
 							keyframeNode.ContextMenuStrip = this.contextMenuStripMorphKeyframe;
@@ -406,6 +416,7 @@ namespace SB3Utility
 		private void BuildTree(string editorVar, ImportedFrame frame, TreeNode parent, ImportedEditor editor)
 		{
 			TreeNode node = new TreeNode(frame.Name);
+			textBoxWorkspaceSearchFor.AutoCompleteCustomSource.Add(node.Text);
 			node.Checked = true;
 			node.Tag = new DragSource(editorVar, typeof(ImportedFrame), editor.Frames.IndexOf(frame));
 			this.treeView.AddChild(parent, node);
@@ -424,21 +435,55 @@ namespace SB3Utility
 				Gui.Scripting.Variables.Remove(FormVar);
 				FormVar = null;
 			}
-			if (treeView.Nodes.Count > 0)
+
+			Dictionary<ImportedEditor, DragSource> editors = new Dictionary<ImportedEditor, DragSource>();
+			foreach (TreeNode node in treeView.Nodes)
 			{
-				TreeNode firstRoot = treeView.Nodes[0];
-				TreeNode firstChild = firstRoot.Nodes[0];
+				TreeNode firstChild = node.Nodes[0];
 				if (firstChild != null && firstChild.Tag != null && firstChild.Tag is DragSource)
 				{
 					DragSource ds = (DragSource)firstChild.Tag;
-					ImportedEditor importedEditor = Gui.Scripting.Variables[ds.Variable] as ImportedEditor;
-					if (importedEditor != null)
+					object editor;
+					if (Gui.Scripting.Variables.TryGetValue(ds.Variable, out editor) && editor is ImportedEditor)
 					{
-						importedEditor.Dispose();
-						Gui.Scripting.Variables.Remove(ds.Variable);
+						if (!editors.ContainsKey(editor as ImportedEditor))
+						{
+							editors.Add(editor as ImportedEditor, ds);
+						}
 					}
 				}
 			}
+			List<DockContent> formWorkspaceList;
+			if (Gui.Docking.DockContents.TryGetValue(typeof(FormWorkspace), out formWorkspaceList))
+			{
+				foreach (FormWorkspace form in formWorkspaceList)
+				{
+					if (form != this)
+					{
+						foreach (TreeNode node in form.treeView.Nodes)
+						{
+							TreeNode firstChild = node.Nodes[0];
+							if (firstChild != null && firstChild.Tag != null && firstChild.Tag is DragSource)
+							{
+								DragSource ds = (DragSource)firstChild.Tag;
+								object editor;
+								if (Gui.Scripting.Variables.TryGetValue(ds.Variable, out editor) && editor is ImportedEditor)
+								{
+									editors.Remove(editor as ImportedEditor);
+								}
+							}
+						}
+					}
+				}
+			}
+			foreach (var pair in editors)
+			{
+				DragSource ds = pair.Value;
+				ImportedEditor importedEditor = pair.Key;
+				importedEditor.Dispose();
+				Gui.Scripting.Variables.Remove(ds.Variable);
+			}
+
 			if (Watcher != null)
 			{
 				if (Reopen)
@@ -582,7 +627,45 @@ namespace SB3Utility
 
 		private void treeViewDragDrop(object sender, DragEventArgs e)
 		{
-			TreeNode node = (TreeNode)e.Data.GetData(typeof(TreeNode));
+			if (e.Data.GetDataPresent(typeof(TreeNode)))
+			{
+				TreeNode node = (TreeNode)e.Data.GetData(typeof(TreeNode));
+				if (node.Tag != null && node.Tag.GetType() == typeof(List<TreeNode>))
+				{
+					List<TreeNode> nodes = (List<TreeNode>)node.Tag;
+					for (int i = 1; i < nodes.Count; i++)
+					{
+						node = nodes[i];
+						if (scriptingToolStripMenuItem.Checked)
+						{
+							DockContent form = (DockContent)node.TreeView.FindForm();
+							if (form is EditorForm)
+							{
+								EditorForm editor = (EditorForm)form;
+								editor.SetDraggedNode(node);
+							}
+						}
+						DropNode(sender, e, node);
+					}
+				}
+				else
+				{
+					DropNode(sender, e, node);
+				}
+			}
+
+			foreach (TreeNode root in treeView.Nodes)
+			{
+				root.Expand();
+			}
+			if (treeView.Nodes.Count > 0)
+			{
+				treeView.Nodes[0].EnsureVisible();
+			}
+		}
+
+		private void DropNode(object sender, DragEventArgs e, TreeNode node)
+		{
 			DragSource? source = node.Tag as DragSource?;
 			if (source != null)
 			{
@@ -617,15 +700,6 @@ namespace SB3Utility
 					treeViewDragDrop(sender, e);
 				}
 			}
-
-			foreach (TreeNode root in treeView.Nodes)
-			{
-				root.Expand();
-			}
-			if (treeView.Nodes.Count > 0)
-			{
-				treeView.Nodes[0].EnsureVisible();
-			}
 		}
 
 		[Plugin]
@@ -633,6 +707,7 @@ namespace SB3Utility
 		{
 			DragSource? source = node.Tag as DragSource?;
 			TreeNode clone = (TreeNode)node.Clone();
+			AddNodeForSearching(clone);
 			clone.Checked = true;
 
 			TreeNode type = null;
@@ -648,6 +723,7 @@ namespace SB3Utility
 			if (type == null)
 			{
 				type = new TreeNode(source.Value.Type.Name);
+				textBoxWorkspaceSearchFor.AutoCompleteCustomSource.Add(type.Text);
 				type.Checked = true;
 				treeView.AddChild(type);
 			}
@@ -673,6 +749,16 @@ namespace SB3Utility
 			treeNodes.Add(clone);
 
 			return clone;
+		}
+
+		void AddNodeForSearching(TreeNode node)
+		{
+			textBoxWorkspaceSearchFor.AutoCompleteCustomSource.Add(node.Text);
+
+			foreach (TreeNode n in node.Nodes)
+			{
+				AddNodeForSearching(n);
+			}
 		}
 
 		private void ChildForms_FormClosing(object sender, FormClosingEventArgs e)
@@ -1052,6 +1138,67 @@ namespace SB3Utility
 			if (Watcher != null)
 			{
 				Watcher.EnableRaisingEvents = automaticReopenToolStripMenuItem.Checked;
+			}
+		}
+
+		private void treeView_KeyUp(object sender, KeyEventArgs e)
+		{
+			try
+			{
+				if (e.KeyData == (Keys.Control | Keys.F))
+				{
+					textBoxWorkspaceSearchFor.Focus();
+					return;
+				}
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
+			}
+		}
+
+		private void textBoxWorkspaceSearchFor_KeyUp(object sender, KeyEventArgs e)
+		{
+			try
+			{
+				if (e.KeyCode == Keys.Enter)
+				{
+					foreach (string name in textBoxWorkspaceSearchFor.AutoCompleteCustomSource)
+					{
+						if (String.Compare(name, textBoxWorkspaceSearchFor.Text, true) == 0)
+						{
+							textBoxWorkspaceSearchFor.Text = name;
+							break;
+						}
+					}
+					List<TreeNode> nodes = Extensions.FindObjectNode(textBoxWorkspaceSearchFor.Text, treeView.Nodes);
+					if (nodes.Count > 0)
+					{
+						if (treeView.SelectedNode == null || !treeView.SelectedNode.Text.Contains(textBoxWorkspaceSearchFor.Text))
+						{
+							treeView.SelectedNode = nodes[0];
+						}
+						else
+						{
+							for (int i = 0; i < nodes.Count; i++)
+							{
+								if (nodes[i] == treeView.SelectedNode)
+								{
+									treeView.SelectedNode = i + 1 < nodes.Count ? nodes[i + 1] : nodes[0];
+									break;
+								}
+							}
+						}
+					}
+					else
+					{
+						Report.ReportLog(textBoxWorkspaceSearchFor.Text + " not found");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Utility.ReportException(ex);
 			}
 		}
 	}

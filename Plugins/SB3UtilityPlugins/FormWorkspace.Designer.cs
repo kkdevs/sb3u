@@ -45,19 +45,21 @@
 			this.automaticReopenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuStripSubmesh = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.targetPositionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripTextBoxTargetPosition = new SB3Utility.ToolStripEditTextBox();
 			this.replaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.materialNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripTextBoxMaterialName = new SB3Utility.ToolStripEditTextBox();
 			this.worldCoordinatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuStripMorphKeyframe = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.renameToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripEditTextBoxNewMorphKeyframeName = new SB3Utility.ToolStripEditTextBox();
 			this.contextMenuStripMaterial = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.toolStripMenuItemTextureMapping = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemTextureMappingDefault = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemTextureMappingPrompt = new System.Windows.Forms.ToolStripMenuItem();
+			this.textBoxWorkspaceSearchFor = new System.Windows.Forms.TextBox();
+			this.label46 = new System.Windows.Forms.Label();
 			this.treeView = new SB3Utility.TriStateTreeView();
+			this.toolStripTextBoxTargetPosition = new SB3Utility.ToolStripEditTextBox();
+			this.toolStripTextBoxMaterialName = new SB3Utility.ToolStripEditTextBox();
+			this.toolStripEditTextBoxNewMorphKeyframeName = new SB3Utility.ToolStripEditTextBox();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.menuStrip1.SuspendLayout();
@@ -68,20 +70,22 @@
 			// 
 			// panel1
 			// 
+			this.panel1.Controls.Add(this.textBoxWorkspaceSearchFor);
+			this.panel1.Controls.Add(this.label46);
 			this.panel1.Controls.Add(this.buttonRemove);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0, 334);
+			this.panel1.Location = new System.Drawing.Point(0, 326);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(227, 39);
+			this.panel1.Size = new System.Drawing.Size(227, 47);
 			this.panel1.TabIndex = 6;
 			// 
 			// buttonRemove
 			// 
-			this.buttonRemove.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-			this.buttonRemove.Location = new System.Drawing.Point(75, 9);
+			this.buttonRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonRemove.Location = new System.Drawing.Point(149, 19);
 			this.buttonRemove.Name = "buttonRemove";
 			this.buttonRemove.Size = new System.Drawing.Size(75, 23);
-			this.buttonRemove.TabIndex = 2;
+			this.buttonRemove.TabIndex = 25;
 			this.buttonRemove.TabStop = false;
 			this.buttonRemove.Text = "Remove";
 			this.buttonRemove.UseVisualStyleBackColor = true;
@@ -195,12 +199,6 @@
 			this.targetPositionToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
 			this.targetPositionToolStripMenuItem.Text = "Target Position";
 			// 
-			// toolStripTextBoxTargetPosition
-			// 
-			this.toolStripTextBoxTargetPosition.Name = "toolStripTextBoxTargetPosition";
-			this.toolStripTextBoxTargetPosition.Size = new System.Drawing.Size(22, 21);
-			this.toolStripTextBoxTargetPosition.AfterEditTextChanged += new System.EventHandler(this.toolStripTextBoxTargetPosition_AfterEditTextChanged);
-			// 
 			// replaceToolStripMenuItem
 			// 
 			this.replaceToolStripMenuItem.Checked = true;
@@ -217,14 +215,6 @@
 			this.materialNameToolStripMenuItem.Name = "materialNameToolStripMenuItem";
 			this.materialNameToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
 			this.materialNameToolStripMenuItem.Text = "Material Name";
-			// 
-			// toolStripTextBoxMaterialName
-			// 
-			this.toolStripTextBoxMaterialName.AcceptsReturn = true;
-			this.toolStripTextBoxMaterialName.MaxLength = 64;
-			this.toolStripTextBoxMaterialName.Name = "toolStripTextBoxMaterialName";
-			this.toolStripTextBoxMaterialName.Size = new System.Drawing.Size(120, 21);
-			this.toolStripTextBoxMaterialName.AfterEditTextChanged += new System.EventHandler(this.toolStripTextBoxMaterialName_AfterEditTextChanged);
 			// 
 			// worldCoordinatesToolStripMenuItem
 			// 
@@ -249,20 +239,12 @@
 			this.renameToToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.renameToToolStripMenuItem.Text = "Rename to";
 			// 
-			// toolStripEditTextBoxNewMorphKeyframeName
-			// 
-			this.toolStripEditTextBoxNewMorphKeyframeName.AcceptsReturn = true;
-			this.toolStripEditTextBoxNewMorphKeyframeName.MaxLength = 64;
-			this.toolStripEditTextBoxNewMorphKeyframeName.Name = "toolStripEditTextBoxNewMorphKeyframeName";
-			this.toolStripEditTextBoxNewMorphKeyframeName.Size = new System.Drawing.Size(120, 21);
-			this.toolStripEditTextBoxNewMorphKeyframeName.AfterEditTextChanged += new System.EventHandler(this.toolStripEditTextBoxNewMorphKeyframeName_AfterEditTextChanged);
-			// 
 			// contextMenuStripMaterial
 			// 
 			this.contextMenuStripMaterial.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemTextureMapping});
 			this.contextMenuStripMaterial.Name = "contextMenuStripMaterial";
-			this.contextMenuStripMaterial.Size = new System.Drawing.Size(156, 48);
+			this.contextMenuStripMaterial.Size = new System.Drawing.Size(156, 26);
 			this.contextMenuStripMaterial.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripMaterial_Opening);
 			// 
 			// toolStripMenuItemTextureMapping
@@ -280,7 +262,7 @@
 			this.toolStripMenuItemTextureMappingDefault.CheckOnClick = true;
 			this.toolStripMenuItemTextureMappingDefault.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.toolStripMenuItemTextureMappingDefault.Name = "toolStripMenuItemTextureMappingDefault";
-			this.toolStripMenuItemTextureMappingDefault.Size = new System.Drawing.Size(152, 22);
+			this.toolStripMenuItemTextureMappingDefault.Size = new System.Drawing.Size(109, 22);
 			this.toolStripMenuItemTextureMappingDefault.Text = "Default";
 			this.toolStripMenuItemTextureMappingDefault.Click += new System.EventHandler(this.toolStripMenuItemTextureMapping_Click);
 			// 
@@ -288,9 +270,31 @@
 			// 
 			this.toolStripMenuItemTextureMappingPrompt.CheckOnClick = true;
 			this.toolStripMenuItemTextureMappingPrompt.Name = "toolStripMenuItemTextureMappingPrompt";
-			this.toolStripMenuItemTextureMappingPrompt.Size = new System.Drawing.Size(152, 22);
+			this.toolStripMenuItemTextureMappingPrompt.Size = new System.Drawing.Size(109, 22);
 			this.toolStripMenuItemTextureMappingPrompt.Text = "Prompt";
 			this.toolStripMenuItemTextureMappingPrompt.Click += new System.EventHandler(this.toolStripMenuItemTextureMapping_Click);
+			// 
+			// textBoxWorkspaceSearchFor
+			// 
+			this.textBoxWorkspaceSearchFor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxWorkspaceSearchFor.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+			this.textBoxWorkspaceSearchFor.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+			this.textBoxWorkspaceSearchFor.Location = new System.Drawing.Point(3, 21);
+			this.textBoxWorkspaceSearchFor.Name = "textBoxWorkspaceSearchFor";
+			this.textBoxWorkspaceSearchFor.Size = new System.Drawing.Size(140, 20);
+			this.textBoxWorkspaceSearchFor.TabIndex = 20;
+			this.textBoxWorkspaceSearchFor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBoxWorkspaceSearchFor_KeyUp);
+			// 
+			// label46
+			// 
+			this.label46.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.label46.AutoSize = true;
+			this.label46.Location = new System.Drawing.Point(3, 5);
+			this.label46.Name = "label46";
+			this.label46.Size = new System.Drawing.Size(59, 13);
+			this.label46.TabIndex = 21;
+			this.label46.Text = "Search For";
 			// 
 			// treeView
 			// 
@@ -300,7 +304,7 @@
 			this.treeView.LabelEdit = true;
 			this.treeView.Location = new System.Drawing.Point(0, 83);
 			this.treeView.Name = "treeView";
-			this.treeView.Size = new System.Drawing.Size(227, 251);
+			this.treeView.Size = new System.Drawing.Size(227, 243);
 			this.treeView.TabIndex = 5;
 			this.treeView.TabStop = false;
 			this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
@@ -309,6 +313,29 @@
 			this.treeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
 			this.treeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
 			this.treeView.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
+			this.treeView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView_KeyUp);
+			// 
+			// toolStripTextBoxTargetPosition
+			// 
+			this.toolStripTextBoxTargetPosition.Name = "toolStripTextBoxTargetPosition";
+			this.toolStripTextBoxTargetPosition.Size = new System.Drawing.Size(22, 21);
+			this.toolStripTextBoxTargetPosition.AfterEditTextChanged += new System.EventHandler(this.toolStripTextBoxTargetPosition_AfterEditTextChanged);
+			// 
+			// toolStripTextBoxMaterialName
+			// 
+			this.toolStripTextBoxMaterialName.AcceptsReturn = true;
+			this.toolStripTextBoxMaterialName.MaxLength = 64;
+			this.toolStripTextBoxMaterialName.Name = "toolStripTextBoxMaterialName";
+			this.toolStripTextBoxMaterialName.Size = new System.Drawing.Size(120, 21);
+			this.toolStripTextBoxMaterialName.AfterEditTextChanged += new System.EventHandler(this.toolStripTextBoxMaterialName_AfterEditTextChanged);
+			// 
+			// toolStripEditTextBoxNewMorphKeyframeName
+			// 
+			this.toolStripEditTextBoxNewMorphKeyframeName.AcceptsReturn = true;
+			this.toolStripEditTextBoxNewMorphKeyframeName.MaxLength = 64;
+			this.toolStripEditTextBoxNewMorphKeyframeName.Name = "toolStripEditTextBoxNewMorphKeyframeName";
+			this.toolStripEditTextBoxNewMorphKeyframeName.Size = new System.Drawing.Size(120, 21);
+			this.toolStripEditTextBoxNewMorphKeyframeName.AfterEditTextChanged += new System.EventHandler(this.toolStripEditTextBoxNewMorphKeyframeName_AfterEditTextChanged);
 			// 
 			// FormWorkspace
 			// 
@@ -323,6 +350,7 @@
 			this.Name = "FormWorkspace";
 			this.Text = "Workspace";
 			this.panel1.ResumeLayout(false);
+			this.panel1.PerformLayout();
 			this.panel2.ResumeLayout(false);
 			this.panel2.PerformLayout();
 			this.menuStrip1.ResumeLayout(false);
@@ -364,6 +392,7 @@
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemTextureMapping;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemTextureMappingDefault;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemTextureMappingPrompt;
-
+		private System.Windows.Forms.TextBox textBoxWorkspaceSearchFor;
+		private System.Windows.Forms.Label label46;
 	}
 }

@@ -956,7 +956,7 @@ namespace UnityPlugin
 						mesh = file.LoadComponent(file.SourceStream, (NotLoaded)a);
 						break;
 					}
-					if (AssetCabinet.ToString(a) == m_Name)
+					if (a is Mesh && ((Mesh)a).m_Name == m_Name)
 					{
 						mesh = (Mesh)a;
 						break;

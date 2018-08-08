@@ -24,7 +24,7 @@
       <Value Profile="(Default)">0, 0</Value>
     </Setting>
     <Setting Name="AnimationExportFormat" Provider="PortableSettingsProvider" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">FBX 2015.1</Value>
+      <Value Profile="(Default)">FBX 2018.1.1</Value>
     </Setting>
     <Setting Name="FbxExportDisplayBoneSize" Provider="PortableSettingsProvider" Type="System.Single" Scope="Application">
       <Value Profile="(Default)">10</Value>
@@ -40,6 +40,9 @@
     </Setting>
     <Setting Name="FbxExportFlatInBetween" Provider="PortableSettingsProvider" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ExportAnimationFilenamePattern" Provider="PortableSettingsProvider" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">{Clip}-{Slot}-{Animator}-</Value>
     </Setting>
   </Settings>
 </SettingsFile>

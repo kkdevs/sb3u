@@ -36,40 +36,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LZ4">
-      <HintPath>..\..\lib\LZ4.dll</HintPath>
+      <HintPath>..\..\SB3UtilityExternalLibraries\LZ4.dll</HintPath>
     </Reference>
-    <Reference Include="MessagePack, Version=1.6.1.2, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MessagePack.1.6.1.2\lib\net45\MessagePack.dll</HintPath>
-    </Reference>
-    <Reference Include="Obvs, Version=3.0.1.58, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Obvs.3.0.1.58\lib\net45\Obvs.dll</HintPath>
-    </Reference>
-    <Reference Include="Obvs.Serialization.MessagePack-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Obvs.Serialization.MessagePack-CSharp.3.0.3.44\lib\net45\Obvs.Serialization.MessagePack-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="SlimDX">
-      <HintPath>..\..\lib\SlimDX.dll</HintPath>
+    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SB3UtilityExternalLibraries\SlimDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +115,7 @@
     <Compile Include="Replace.cs" />
     <Compile Include="unity3d\PhysicMaterial.cs" />
     <Compile Include="unity3d\LightmapSettings.cs" />
+    <Compile Include="unity3d\QualitySettings.cs" />
     <Compile Include="unity3d\PreloadData.cs" />
     <Compile Include="unity3d\AudioReverbZone.cs" />
     <Compile Include="unity3d\RectTransform.cs" />
@@ -175,9 +153,6 @@
       <Project>{5647b104-8f58-4867-b849-dac65d5243bd}</Project>
       <Name>SB3UtilityPP</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

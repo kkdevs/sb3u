@@ -116,6 +116,12 @@ namespace UnityPlugin
 				{
 					dstVertList.AddRange(dstVMesh.submeshes[i].vertexList);
 				}
+				Transform meshTransform = dstSMesh.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
+				Matrix meshTransformMatrix = Transform.WorldTransform(meshTransform);
+				foreach (var vert in dstVertList)
+				{
+					vert.position = Vector3.TransformCoordinate(vert.position, meshTransformMatrix);
+				}
 
 				int srcMeshRId = srcAnimatorEditor.GetMeshRendererId(srcNmlMeshId < 0 ? dstSMesh.m_GameObject.instance.m_Name : srcNmlEditor.GenericMonos[srcNmlMeshId].ObjectName);
 				SkinnedMeshRenderer srcSMesh = (SkinnedMeshRenderer)srcAnimatorEditor.Meshes[srcMeshRId];
@@ -124,6 +130,12 @@ namespace UnityPlugin
 				for (int i = 1; i < srcVMesh.submeshes.Count; i++)
 				{
 					srcVertList.AddRange(srcVMesh.submeshes[i].vertexList);
+				}
+				meshTransform = srcSMesh.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
+				meshTransformMatrix = Transform.WorldTransform(meshTransform);
+				foreach (var vert in srcVertList)
+				{
+					vert.position = Vector3.TransformCoordinate(vert.position, meshTransformMatrix);
 				}
 
 				GenericMono dstGenMono = GenericMonos.Find
@@ -215,7 +227,7 @@ namespace UnityPlugin
 						Matrix worldTransform;
 						if (worldCoordinates)
 						{
-							Transform meshTransform = adjMeshR.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
+							meshTransform = adjMeshR.m_GameObject.instance.FindLinkedComponent(typeof(Transform));
 							worldTransform = Transform.WorldTransform(meshTransform);
 						}
 						else
@@ -296,6 +308,43 @@ namespace UnityPlugin
 		{
 			GenericMonos.RemoveAt(id);
 			Parser.Param = GenericMonos;
+
+			Changed = true;
+		}
+
+		[Plugin]
+		public void CopyNormals(int id, AnimatorEditor dstAnimatorEditor, bool minOrMax, bool setOrGet)
+		{
+			GenericMono dstData = GenericMonos[(int)id];
+			int dstMeshRId = dstAnimatorEditor.GetMeshRendererId(dstData.ObjectName);
+			MeshRenderer mr = (MeshRenderer)dstAnimatorEditor.Meshes[dstMeshRId];
+			Operations.vMesh m = new Operations.vMesh(mr, false, false);
+			List<Vector3> normals = minOrMax ? dstData.NormalMax : dstData.NormalMin;
+			if (setOrGet)
+			{
+				for (int i = 0; i < m.submeshes.Count; i++)
+				{
+					Operations.vSubmesh s = m.submeshes[i];
+					for (int j = 0; j < s.vertexList.Count; j++)
+					{
+						s.vertexList[j].normal = normals[j];
+					}
+				}
+				m.Flush();
+			}
+			else
+			{
+				normals.Clear();
+				for (int i = 0; i < m.submeshes.Count; i++)
+				{
+					Operations.vSubmesh s = m.submeshes[i];
+					for (int j = 0; j < s.vertexList.Count; j++)
+					{
+						normals.Add(s.vertexList[j].normal);
+					}
+				}
+				Parser.Param = GenericMonos;
+			}
 
 			Changed = true;
 		}

@@ -31,19 +31,26 @@ namespace SB3Utility
 	{
 		System::Text::StringBuilder^ sb = gcnew System::Text::StringBuilder();
 		FbxNode* lNode = pNode;
-		while (lNode->GetParent() != pScene->GetRootNode())
+		if (lNode != NULL && lNode->GetParent())
 		{
-			sb->Insert(0, gcnew String(lNode->GetNameOnly()))->Insert(0, (System::Char)'/');
-			lNode = lNode->GetParent();
-		}
-		if (sb->Length > 0)
-		{
-			sb->Remove(0, 1);
-			return sb->ToString();
+			while (lNode->GetParent() != pScene->GetRootNode())
+			{
+				sb->Insert(0, gcnew String(lNode->GetNameOnly()))->Insert(0, (System::Char)'/');
+				lNode = lNode->GetParent();
+			}
+			if (sb->Length > 0)
+			{
+				sb->Remove(0, 1);
+				return sb->ToString();
+			}
+			else
+			{
+				return gcnew String(pNode->GetNameOnly());
+			}
 		}
 		else
 		{
-			return gcnew String(pNode->GetNameOnly());
+			return String::Empty;
 		}
 	}
 

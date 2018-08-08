@@ -29,7 +29,6 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormNormalsAndTangents));
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.numericThreshold = new System.Windows.Forms.NumericUpDown();
@@ -84,7 +83,8 @@
 			this.numericThreshold.Name = "numericThreshold";
 			this.numericThreshold.Size = new System.Drawing.Size(98, 20);
 			this.numericThreshold.TabIndex = 2;
-			this.toolTip1.SetToolTip(this.numericThreshold, resources.GetString("numericThreshold.ToolTip"));
+			this.toolTip1.SetToolTip(this.numericThreshold, "Any negative threshold computes normals for hard edges.\r\nPositive thresholds comp" +
+        "ute normals for soft edges and\r\nthese might be required for unwelded submeshes.");
 			this.numericThreshold.Value = new decimal(new int[] {
             1,
             0,

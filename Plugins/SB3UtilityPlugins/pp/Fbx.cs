@@ -16,7 +16,7 @@ namespace SB3Utility
 		public static void WorkspaceFbx(string path, string variable)
 		{
 			string importVar = Gui.Scripting.GetNextVariable("importFbx");
-			var importer = (Fbx.Importer)Gui.Scripting.RunScript(importVar + " = ImportFbx(path=\"" + path + "\", negateQuaternionFlips=" + (bool)Gui.Config["FbxImportAnimationNegateQuaternionFlips"] + ", forceTypeSampled=" + (bool)Gui.Config["FbxImportAnimationForceTypeSampled"] + ")");
+			var importer = (Fbx.Importer)Gui.Scripting.RunScript(importVar + " = ImportFbx(path=\"" + path + "\", averageNormals=" + (bool)Gui.Config["FbxImportAverageNormals"] + ", negateQuaternionFlips=" + (bool)Gui.Config["FbxImportAnimationNegateQuaternionFlips"] + ", forceTypeSampled=" + (bool)Gui.Config["FbxImportAnimationForceTypeSampled"] + ")");
 
 			string editorVar = Gui.Scripting.GetNextVariable("importedEditor");
 			var editor = (ImportedEditor)Gui.Scripting.RunScript(editorVar + " = ImportedEditor(" + importVar + ")");
@@ -48,9 +48,9 @@ namespace SB3Utility
 		}
 
 		[Plugin]
-		public static Fbx.Importer ImportFbx([DefaultVar]string path, bool negateQuaternionFlips, bool forceTypeSampled)
+		public static Fbx.Importer ImportFbx([DefaultVar]string path, bool averageNormals, bool negateQuaternionFlips, bool forceTypeSampled)
 		{
-			return new Fbx.Importer(path, negateQuaternionFlips, forceTypeSampled);
+			return new Fbx.Importer(path, averageNormals, negateQuaternionFlips, forceTypeSampled);
 		}
 	}
 

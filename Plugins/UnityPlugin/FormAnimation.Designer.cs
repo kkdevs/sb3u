@@ -44,7 +44,12 @@
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
 			this.labelAnimationTracks = new System.Windows.Forms.Label();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.editTextBoxAnimationIsolator = new SB3Utility.EditTextBox();
+			this.label2 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.label4 = new System.Windows.Forms.Label();
+			this.editTextBoxAnimationFilenamePattern = new SB3Utility.EditTextBox();
+			this.checkBoxExportFbx1ClipPerFile = new System.Windows.Forms.CheckBox();
 			this.label28 = new System.Windows.Forms.Label();
 			this.comboBoxAnimationExportFormat = new System.Windows.Forms.ComboBox();
 			this.buttonAnimationExport = new System.Windows.Forms.Button();
@@ -80,10 +85,10 @@
 			this.buttonStateConstantInsert = new System.Windows.Forms.Button();
 			this.buttonStateConstantRemove = new System.Windows.Forms.Button();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
-			this.buttonAnimationClipInsert = new System.Windows.Forms.Button();
+			this.buttonAnimationInsertSlot = new System.Windows.Forms.Button();
 			this.buttonAnimationClipUp = new System.Windows.Forms.Button();
 			this.buttonAnimationClipDown = new System.Windows.Forms.Button();
-			this.buttonAnimationClipDeleteSlot = new System.Windows.Forms.Button();
+			this.buttonAnimationDeleteSlot = new System.Windows.Forms.Button();
 			this.buttonAnimatorOverrideControllerLink = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.buttonAnimationClipRemoveClip = new System.Windows.Forms.Button();
@@ -100,6 +105,8 @@
 			this.label30 = new System.Windows.Forms.Label();
 			this.buttonAnimationClipDuplicate = new System.Windows.Forms.Button();
 			this.dataGridViewAnimationClips = new System.Windows.Forms.DataGridView();
+			this.labelAnimationClips = new System.Windows.Forms.Label();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.ColumnAnimationClipName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.ColumnAnimationClipAsset = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.ColumnAnimationClipPathID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -114,8 +121,6 @@
 			this.ColumnAnimationClipDense = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.ColumnAnimationClipStream = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.ColumnCollection = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.labelAnimationClips = new System.Windows.Forms.Label();
-			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -149,6 +154,8 @@
 			// 
 			// splitContainer1.Panel1
 			// 
+			this.splitContainer1.Panel1.Controls.Add(this.editTextBoxAnimationIsolator);
+			this.splitContainer1.Panel1.Controls.Add(this.label2);
 			this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
 			this.splitContainer1.Panel1.Controls.Add(this.checkBoxAnimationTracksHideTrackInfo);
 			this.splitContainer1.Panel1.Controls.Add(this.listViewAnimationTracks);
@@ -174,24 +181,81 @@
 			this.splitContainer1.SplitterDistance = 316;
 			this.splitContainer1.TabIndex = 1;
 			// 
+			// editTextBoxAnimationIsolator
+			// 
+			this.editTextBoxAnimationIsolator.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.editTextBoxAnimationIsolator.BackColor = System.Drawing.SystemColors.Control;
+			this.editTextBoxAnimationIsolator.Location = new System.Drawing.Point(356, 48);
+			this.editTextBoxAnimationIsolator.Name = "editTextBoxAnimationIsolator";
+			this.editTextBoxAnimationIsolator.ReadOnly = true;
+			this.editTextBoxAnimationIsolator.Size = new System.Drawing.Size(72, 20);
+			this.editTextBoxAnimationIsolator.TabIndex = 3;
+			this.editTextBoxAnimationIsolator.TabStop = false;
+			// 
+			// label2
+			// 
+			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(309, 51);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(41, 13);
+			this.label2.TabIndex = 47;
+			this.label2.Text = "Isolator";
+			// 
 			// groupBox2
 			// 
 			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox2.Controls.Add(this.label4);
+			this.groupBox2.Controls.Add(this.editTextBoxAnimationFilenamePattern);
+			this.groupBox2.Controls.Add(this.checkBoxExportFbx1ClipPerFile);
 			this.groupBox2.Controls.Add(this.label28);
 			this.groupBox2.Controls.Add(this.comboBoxAnimationExportFormat);
 			this.groupBox2.Controls.Add(this.buttonAnimationExport);
 			this.groupBox2.Controls.Add(this.panelMeshExportOptionsFbx);
-			this.groupBox2.Location = new System.Drawing.Point(308, 59);
+			this.groupBox2.Location = new System.Drawing.Point(308, 74);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(120, 200);
+			this.groupBox2.Size = new System.Drawing.Size(120, 239);
 			this.groupBox2.TabIndex = 40;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Export Options";
 			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(2, 15);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(86, 13);
+			this.label4.TabIndex = 279;
+			this.label4.Text = "Filename Pattern";
+			// 
+			// editTextBoxAnimationFilenamePattern
+			// 
+			this.editTextBoxAnimationFilenamePattern.Location = new System.Drawing.Point(5, 30);
+			this.editTextBoxAnimationFilenamePattern.Name = "editTextBoxAnimationFilenamePattern";
+			this.editTextBoxAnimationFilenamePattern.Size = new System.Drawing.Size(111, 20);
+			this.editTextBoxAnimationFilenamePattern.TabIndex = 42;
+			this.editTextBoxAnimationFilenamePattern.TabStop = false;
+			this.editTextBoxAnimationFilenamePattern.Text = "{Clip}-{Slot}-{Animator}-";
+			this.toolTip1.SetToolTip(this.editTextBoxAnimationFilenamePattern, "Default: {Clip}-{Slot}-{Animator}-");
+			this.editTextBoxAnimationFilenamePattern.AfterEditTextChanged += new System.EventHandler(this.editTextBoxAnimationFilenamePattern_AfterEditTextChanged);
+			// 
+			// checkBoxExportFbx1ClipPerFile
+			// 
+			this.checkBoxExportFbx1ClipPerFile.AutoSize = true;
+			this.checkBoxExportFbx1ClipPerFile.Checked = true;
+			this.checkBoxExportFbx1ClipPerFile.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkBoxExportFbx1ClipPerFile.Location = new System.Drawing.Point(5, 81);
+			this.checkBoxExportFbx1ClipPerFile.Name = "checkBoxExportFbx1ClipPerFile";
+			this.checkBoxExportFbx1ClipPerFile.Size = new System.Drawing.Size(103, 17);
+			this.checkBoxExportFbx1ClipPerFile.TabIndex = 46;
+			this.checkBoxExportFbx1ClipPerFile.TabStop = false;
+			this.checkBoxExportFbx1ClipPerFile.Text = "One Clip per File";
+			this.checkBoxExportFbx1ClipPerFile.UseVisualStyleBackColor = true;
+			// 
 			// label28
 			// 
 			this.label28.AutoSize = true;
-			this.label28.Location = new System.Drawing.Point(2, 19);
+			this.label28.Location = new System.Drawing.Point(2, 105);
 			this.label28.Name = "label28";
 			this.label28.Size = new System.Drawing.Size(39, 13);
 			this.label28.TabIndex = 131;
@@ -201,15 +265,15 @@
 			// 
 			this.comboBoxAnimationExportFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboBoxAnimationExportFormat.DropDownWidth = 110;
-			this.comboBoxAnimationExportFormat.Location = new System.Drawing.Point(42, 15);
+			this.comboBoxAnimationExportFormat.Location = new System.Drawing.Point(42, 101);
 			this.comboBoxAnimationExportFormat.Name = "comboBoxAnimationExportFormat";
 			this.comboBoxAnimationExportFormat.Size = new System.Drawing.Size(74, 21);
-			this.comboBoxAnimationExportFormat.TabIndex = 42;
+			this.comboBoxAnimationExportFormat.TabIndex = 48;
 			this.comboBoxAnimationExportFormat.SelectedIndexChanged += new System.EventHandler(this.comboBoxAnimationExportFormat_SelectedIndexChanged);
 			// 
 			// buttonAnimationExport
 			// 
-			this.buttonAnimationExport.Location = new System.Drawing.Point(25, 42);
+			this.buttonAnimationExport.Location = new System.Drawing.Point(25, 53);
 			this.buttonAnimationExport.Name = "buttonAnimationExport";
 			this.buttonAnimationExport.Size = new System.Drawing.Size(75, 23);
 			this.buttonAnimationExport.TabIndex = 44;
@@ -220,8 +284,7 @@
 			// 
 			// panelMeshExportOptionsFbx
 			// 
-			this.panelMeshExportOptionsFbx.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+			this.panelMeshExportOptionsFbx.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.panelMeshExportOptionsFbx.Controls.Add(this.checkBoxExportFbxFlatInbetween);
 			this.panelMeshExportOptionsFbx.Controls.Add(this.checkBoxExportFbxMorphs);
@@ -230,18 +293,18 @@
 			this.panelMeshExportOptionsFbx.Controls.Add(this.checkBoxExportFbxLinearInterpolation);
 			this.panelMeshExportOptionsFbx.Controls.Add(this.label13);
 			this.panelMeshExportOptionsFbx.Controls.Add(this.textBoxExportFbxKeyframeRange);
-			this.panelMeshExportOptionsFbx.Location = new System.Drawing.Point(3, 70);
+			this.panelMeshExportOptionsFbx.Location = new System.Drawing.Point(3, 125);
 			this.panelMeshExportOptionsFbx.Name = "panelMeshExportOptionsFbx";
-			this.panelMeshExportOptionsFbx.Size = new System.Drawing.Size(114, 127);
+			this.panelMeshExportOptionsFbx.Size = new System.Drawing.Size(114, 111);
 			this.panelMeshExportOptionsFbx.TabIndex = 60;
 			// 
 			// checkBoxExportFbxFlatInbetween
 			// 
 			this.checkBoxExportFbxFlatInbetween.AutoSize = true;
-			this.checkBoxExportFbxFlatInbetween.Location = new System.Drawing.Point(3, 75);
+			this.checkBoxExportFbxFlatInbetween.Location = new System.Drawing.Point(5, 70);
 			this.checkBoxExportFbxFlatInbetween.Name = "checkBoxExportFbxFlatInbetween";
 			this.checkBoxExportFbxFlatInbetween.Size = new System.Drawing.Size(100, 17);
-			this.checkBoxExportFbxFlatInbetween.TabIndex = 276;
+			this.checkBoxExportFbxFlatInbetween.TabIndex = 68;
 			this.checkBoxExportFbxFlatInbetween.TabStop = false;
 			this.checkBoxExportFbxFlatInbetween.Text = "Flat In-Between";
 			this.toolTip1.SetToolTip(this.checkBoxExportFbxFlatInbetween, "In-Between Blend-Shapes will be converted\r\ninto relative Blend-Shapes for Blender" +
@@ -251,7 +314,7 @@
 			// checkBoxExportFbxMorphs
 			// 
 			this.checkBoxExportFbxMorphs.AutoSize = true;
-			this.checkBoxExportFbxMorphs.Location = new System.Drawing.Point(3, 52);
+			this.checkBoxExportFbxMorphs.Location = new System.Drawing.Point(5, 48);
 			this.checkBoxExportFbxMorphs.Name = "checkBoxExportFbxMorphs";
 			this.checkBoxExportFbxMorphs.Size = new System.Drawing.Size(61, 17);
 			this.checkBoxExportFbxMorphs.TabIndex = 66;
@@ -262,7 +325,7 @@
 			// label47
 			// 
 			this.label47.AutoSize = true;
-			this.label47.Location = new System.Drawing.Point(2, 101);
+			this.label47.Location = new System.Drawing.Point(4, 93);
 			this.label47.Name = "label47";
 			this.label47.Size = new System.Drawing.Size(55, 13);
 			this.label47.TabIndex = 275;
@@ -271,10 +334,10 @@
 			// editTextBoxExportFbxBoneSize
 			// 
 			this.editTextBoxExportFbxBoneSize.BackColor = System.Drawing.SystemColors.Window;
-			this.editTextBoxExportFbxBoneSize.Location = new System.Drawing.Point(59, 98);
+			this.editTextBoxExportFbxBoneSize.Location = new System.Drawing.Point(61, 90);
 			this.editTextBoxExportFbxBoneSize.Name = "editTextBoxExportFbxBoneSize";
 			this.editTextBoxExportFbxBoneSize.Size = new System.Drawing.Size(28, 20);
-			this.editTextBoxExportFbxBoneSize.TabIndex = 68;
+			this.editTextBoxExportFbxBoneSize.TabIndex = 70;
 			this.editTextBoxExportFbxBoneSize.TabStop = false;
 			this.toolTip1.SetToolTip(this.editTextBoxExportFbxBoneSize, "Display bone size: 100.0 equates to radius 3.0 in Maya");
 			// 
@@ -284,7 +347,7 @@
 			this.checkBoxExportFbxLinearInterpolation.CheckAlign = System.Drawing.ContentAlignment.BottomRight;
 			this.checkBoxExportFbxLinearInterpolation.Checked = true;
 			this.checkBoxExportFbxLinearInterpolation.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBoxExportFbxLinearInterpolation.Location = new System.Drawing.Point(18, 29);
+			this.checkBoxExportFbxLinearInterpolation.Location = new System.Drawing.Point(20, 26);
 			this.checkBoxExportFbxLinearInterpolation.Name = "checkBoxExportFbxLinearInterpolation";
 			this.checkBoxExportFbxLinearInterpolation.Size = new System.Drawing.Size(55, 17);
 			this.checkBoxExportFbxLinearInterpolation.TabIndex = 64;
@@ -295,7 +358,7 @@
 			// label13
 			// 
 			this.label13.AutoSize = true;
-			this.label13.Location = new System.Drawing.Point(1, 6);
+			this.label13.Location = new System.Drawing.Point(3, 6);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(56, 13);
 			this.label13.TabIndex = 268;
@@ -303,7 +366,7 @@
 			// 
 			// textBoxExportFbxKeyframeRange
 			// 
-			this.textBoxExportFbxKeyframeRange.Location = new System.Drawing.Point(59, 3);
+			this.textBoxExportFbxKeyframeRange.Location = new System.Drawing.Point(61, 3);
 			this.textBoxExportFbxKeyframeRange.MaxLength = 10;
 			this.textBoxExportFbxKeyframeRange.Name = "textBoxExportFbxKeyframeRange";
 			this.textBoxExportFbxKeyframeRange.Size = new System.Drawing.Size(50, 20);
@@ -313,11 +376,11 @@
 			// 
 			// checkBoxAnimationTracksHideTrackInfo
 			// 
-			this.checkBoxAnimationTracksHideTrackInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.checkBoxAnimationTracksHideTrackInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBoxAnimationTracksHideTrackInfo.AutoSize = true;
 			this.checkBoxAnimationTracksHideTrackInfo.Checked = true;
 			this.checkBoxAnimationTracksHideTrackInfo.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBoxAnimationTracksHideTrackInfo.Location = new System.Drawing.Point(308, 295);
+			this.checkBoxAnimationTracksHideTrackInfo.Location = new System.Drawing.Point(202, 3);
 			this.checkBoxAnimationTracksHideTrackInfo.Name = "checkBoxAnimationTracksHideTrackInfo";
 			this.checkBoxAnimationTracksHideTrackInfo.Size = new System.Drawing.Size(100, 17);
 			this.checkBoxAnimationTracksHideTrackInfo.TabIndex = 46;
@@ -503,10 +566,10 @@
 			// groupBox3
 			// 
 			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox3.Controls.Add(this.buttonAnimationClipInsert);
+			this.groupBox3.Controls.Add(this.buttonAnimationInsertSlot);
 			this.groupBox3.Controls.Add(this.buttonAnimationClipUp);
 			this.groupBox3.Controls.Add(this.buttonAnimationClipDown);
-			this.groupBox3.Controls.Add(this.buttonAnimationClipDeleteSlot);
+			this.groupBox3.Controls.Add(this.buttonAnimationDeleteSlot);
 			this.groupBox3.Location = new System.Drawing.Point(346, 126);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(82, 76);
@@ -514,18 +577,18 @@
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Clip Control";
 			// 
-			// buttonAnimationClipInsert
+			// buttonAnimationInsertSlot
 			// 
-			this.buttonAnimationClipInsert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonAnimationClipInsert.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonAnimationClipInsert.Location = new System.Drawing.Point(46, 17);
-			this.buttonAnimationClipInsert.Name = "buttonAnimationClipInsert";
-			this.buttonAnimationClipInsert.Size = new System.Drawing.Size(26, 23);
-			this.buttonAnimationClipInsert.TabIndex = 114;
-			this.buttonAnimationClipInsert.Text = "+";
-			this.toolTip1.SetToolTip(this.buttonAnimationClipInsert, "Insert Slot");
-			this.buttonAnimationClipInsert.UseVisualStyleBackColor = true;
-			this.buttonAnimationClipInsert.Click += new System.EventHandler(this.buttonAnimationClipInsert_Click);
+			this.buttonAnimationInsertSlot.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonAnimationInsertSlot.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.buttonAnimationInsertSlot.Location = new System.Drawing.Point(46, 17);
+			this.buttonAnimationInsertSlot.Name = "buttonAnimationInsertSlot";
+			this.buttonAnimationInsertSlot.Size = new System.Drawing.Size(26, 23);
+			this.buttonAnimationInsertSlot.TabIndex = 114;
+			this.buttonAnimationInsertSlot.Text = "+";
+			this.toolTip1.SetToolTip(this.buttonAnimationInsertSlot, "Insert Slot");
+			this.buttonAnimationInsertSlot.UseVisualStyleBackColor = true;
+			this.buttonAnimationInsertSlot.Click += new System.EventHandler(this.buttonAnimationInsertSlot_Click);
 			// 
 			// buttonAnimationClipUp
 			// 
@@ -549,19 +612,19 @@
 			this.buttonAnimationClipDown.UseVisualStyleBackColor = true;
 			this.buttonAnimationClipDown.Click += new System.EventHandler(this.buttonAnimationClipDown_Click);
 			// 
-			// buttonAnimationClipDeleteSlot
+			// buttonAnimationDeleteSlot
 			// 
-			this.buttonAnimationClipDeleteSlot.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonAnimationClipDeleteSlot.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonAnimationClipDeleteSlot.Location = new System.Drawing.Point(46, 46);
-			this.buttonAnimationClipDeleteSlot.Name = "buttonAnimationClipDeleteSlot";
-			this.buttonAnimationClipDeleteSlot.Size = new System.Drawing.Size(26, 23);
-			this.buttonAnimationClipDeleteSlot.TabIndex = 118;
-			this.buttonAnimationClipDeleteSlot.Text = "-";
-			this.toolTip1.SetToolTip(this.buttonAnimationClipDeleteSlot, "This will NOT delete the clip! Only the slot will be removed.\r\n\r\nHandle all Anima" +
+			this.buttonAnimationDeleteSlot.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonAnimationDeleteSlot.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.buttonAnimationDeleteSlot.Location = new System.Drawing.Point(46, 46);
+			this.buttonAnimationDeleteSlot.Name = "buttonAnimationDeleteSlot";
+			this.buttonAnimationDeleteSlot.Size = new System.Drawing.Size(26, 23);
+			this.buttonAnimationDeleteSlot.TabIndex = 118;
+			this.buttonAnimationDeleteSlot.Text = "-";
+			this.toolTip1.SetToolTip(this.buttonAnimationDeleteSlot, "This will NOT delete the clip! Only the slot will be removed.\r\n\r\nHandle all Anima" +
         "torOverrideControllers first!");
-			this.buttonAnimationClipDeleteSlot.UseVisualStyleBackColor = true;
-			this.buttonAnimationClipDeleteSlot.Click += new System.EventHandler(this.buttonAnimationClipDeleteSlot_Click);
+			this.buttonAnimationDeleteSlot.UseVisualStyleBackColor = true;
+			this.buttonAnimationDeleteSlot.Click += new System.EventHandler(this.buttonAnimationDeleteSlot_Click);
 			// 
 			// buttonAnimatorOverrideControllerLink
 			// 
@@ -628,7 +691,7 @@
 			this.groupBox1.Location = new System.Drawing.Point(3, -1);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(337, 63);
-			this.groupBox1.TabIndex = 50;
+			this.groupBox1.TabIndex = 80;
 			this.groupBox1.TabStop = false;
 			// 
 			// checkBoxAnimationKeyframeAutoPlay
@@ -788,6 +851,7 @@
 			this.dataGridViewAnimationClips.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dataGridViewAnimationClips.Size = new System.Drawing.Size(337, 155);
 			this.dataGridViewAnimationClips.TabIndex = 100;
+			this.dataGridViewAnimationClips.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewAnimationClips_ColumnHeaderMouseClick);
 			this.dataGridViewAnimationClips.CurrentCellDirtyStateChanged += new System.EventHandler(this.dataGridViewAnimationClips_CurrentCellDirtyStateChanged);
 			this.dataGridViewAnimationClips.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataGridViewAnimationClips_DataError);
 			this.dataGridViewAnimationClips.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dataGridViewAnimationClips_EditingControlShowing);
@@ -797,12 +861,27 @@
 			this.dataGridViewAnimationClips.DragOver += new System.Windows.Forms.DragEventHandler(this.dataGridViewAnimationClips_DragOver);
 			this.dataGridViewAnimationClips.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridViewAnimationClips_KeyDown);
 			// 
+			// labelAnimationClips
+			// 
+			this.labelAnimationClips.AutoSize = true;
+			this.labelAnimationClips.Location = new System.Drawing.Point(3, 70);
+			this.labelAnimationClips.Name = "labelAnimationClips";
+			this.labelAnimationClips.Size = new System.Drawing.Size(78, 13);
+			this.labelAnimationClips.TabIndex = 0;
+			this.labelAnimationClips.Text = "Animation Clips";
+			// 
+			// toolTip1
+			// 
+			this.toolTip1.OwnerDraw = true;
+			this.toolTip1.Draw += new System.Windows.Forms.DrawToolTipEventHandler(this.toolTip1_Draw);
+			// 
 			// ColumnAnimationClipName
 			// 
 			this.ColumnAnimationClipName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
 			this.ColumnAnimationClipName.FillWeight = 110F;
 			this.ColumnAnimationClipName.HeaderText = "Name";
 			this.ColumnAnimationClipName.Name = "ColumnAnimationClipName";
+			this.ColumnAnimationClipName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
 			// 
 			// ColumnAnimationClipAsset
 			// 
@@ -933,20 +1012,6 @@
 			this.ColumnCollection.Name = "ColumnCollection";
 			this.ColumnCollection.ReadOnly = true;
 			// 
-			// labelAnimationClips
-			// 
-			this.labelAnimationClips.AutoSize = true;
-			this.labelAnimationClips.Location = new System.Drawing.Point(3, 70);
-			this.labelAnimationClips.Name = "labelAnimationClips";
-			this.labelAnimationClips.Size = new System.Drawing.Size(78, 13);
-			this.labelAnimationClips.TabIndex = 0;
-			this.labelAnimationClips.Text = "Animation Clips";
-			// 
-			// toolTip1
-			// 
-			this.toolTip1.OwnerDraw = true;
-			this.toolTip1.Draw += new System.Windows.Forms.DrawToolTipEventHandler(this.toolTip1_Draw);
-			// 
 			// FormAnimation
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -985,8 +1050,8 @@
 		private System.Windows.Forms.ListView listViewAnimationTracks;
 		private System.Windows.Forms.DataGridView dataGridViewAnimationClips;
 		private System.Windows.Forms.Label labelAnimationClips;
-		private System.Windows.Forms.Button buttonAnimationClipDeleteSlot;
-		private System.Windows.Forms.Button buttonAnimationClipInsert;
+		private System.Windows.Forms.Button buttonAnimationDeleteSlot;
+		private System.Windows.Forms.Button buttonAnimationInsertSlot;
 		private System.Windows.Forms.Button buttonAnimationClipDown;
 		private System.Windows.Forms.Button buttonAnimationClipUp;
 		private System.Windows.Forms.ToolTip toolTip1;
@@ -1040,6 +1105,11 @@
 		private System.Windows.Forms.Button buttonStateConstantInsert;
 		private System.Windows.Forms.Button buttonStateConstantRemove;
 		private System.Windows.Forms.GroupBox groupBox3;
+		private System.Windows.Forms.Label label2;
+		private SB3Utility.EditTextBox editTextBoxAnimationIsolator;
+		private System.Windows.Forms.CheckBox checkBoxExportFbx1ClipPerFile;
+		private System.Windows.Forms.Label label4;
+		public SB3Utility.EditTextBox editTextBoxAnimationFilenamePattern;
 		private System.Windows.Forms.DataGridViewTextBoxColumn ColumnAnimationClipName;
 		private System.Windows.Forms.DataGridViewComboBoxColumn ColumnAnimationClipAsset;
 		private System.Windows.Forms.DataGridViewTextBoxColumn ColumnAnimationClipPathID;

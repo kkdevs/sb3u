@@ -1,5 +1,4 @@
 #include <fbxsdk.h>
-#include <fbxsdk/fileio/fbxiosettings.h>
 #include "SB3UtilityFBX.h"
 
 namespace SB3Utility
